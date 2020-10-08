@@ -50,7 +50,7 @@ def dataset_batch_init(directory='./data/raw', batch_directory='./data/batch', b
             for s in batch:
                 text += s.item()
 
-            f.write(text)
+            f.write(text[:-1])
 
 
 def get_batch(index, batch_directory='./data/batch', batch_size=32):
