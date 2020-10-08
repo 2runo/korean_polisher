@@ -35,8 +35,11 @@ def dataset_batch_init(directory='./data/raw', batch_directory='./data/batch', b
             for line in f.readlines():
                 data.append(line)
     
+    # 480010 -> 15000 * 32 * 1 + 10
     data_num = len(data)
-    data = np.array(data).reshape(data_num//batch_size, batch_size, -1)  # 480000 -> 15000(num_samples) * 32(batch_size) * 1(sentence)
+    total_step = data_num//batch_size  # 15000
+    data = data[:batch_size*total_step]  # drop last in order to avoid error when reshaping
+    data = np.array(data).reshape(data_num//batch_size, batch_size, -1)  # 480000 -> 15000(total_step) * 32(batch_size) * 1(sentence)
 
 
     # save to batch_dir
