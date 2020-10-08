@@ -3,20 +3,30 @@ from pprint import pprint
 import numpy as np
 import pandas as pd
 import joblib
+import tensorflow as tf
 
 from awkfy import *
 
 
-def get_dataset(directory, batch_size=32, max_length=None, shuffle=True, seed=None, validation_split=None):
-    """
-    # Returns a list with all the lines of texts in './data/raw'.
-    Returns a reshaped np.ndarray object in shape (total_steps, batch_size, 1).
-    Example: 480000 data, batch_size=32 -> (15000, 32, 1)
-    """
+"""
+Note: run dataset_batch_init -> iter and run get_batch & awkfy_batch & tokenize_batch
+"""
 
+
+
+def dataset_batch_init(directory='./data/raw', batch_directory='./data/batch', batch_size=32):
+    """
+    directory: './data/raw'
+    batch_directory = './data/batch'
+    """
     root = os.getcwd()
     data_dir = os.path.join(root, directory)
+    batch_dir = os.path.join(root, batch_directory)
+    if not os.path.exists(batch_dir):
+        os.mkdir(batch_dir)
 
+
+    # collect data from directory
     file_list = os.listdir(os.path.join(data_dir))
     data = []
     for file in file_list:
@@ -26,9 +36,36 @@ def get_dataset(directory, batch_size=32, max_length=None, shuffle=True, seed=No
                 data.append(line)
     
     data_num = len(data)
+    data = np.array(data).reshape(data_num//batch_size, batch_size, -1)  # 480000 -> 15000(num_samples) * 32(batch_size) * 1(sentence)
+
+
+    # save to batch_dir
+    for i, batch in enumerate(data):
+        filename = os.path.join(batch_dir, f'batch{i}.txt')
+        with open(filename, 'w', encoding='utf-8') as f:
+            text = ""
+            for s in batch:
+                text += s.item()
+
+            f.write(text)
+
+
+def get_batch(index, batch_directory='./data/batch', batch_size=32):
+    """
+    Returns text read from 'batch{index}.txt'.
+    """
+    root = os.getcwd()
+    batch_dir = os.path.join(root, batch_directory)
+    filename = os.path.join(batch_dir, f'batch{index}.txt')
+
+    with open(filename, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
     
-    data = np.array(data).reshape(data_num//batch_size, batch_size, -1)  # 480000 -> 15000(num_samples) * 32(batch_size) * 1(sentence)    
-    return data  # (total_steps, batch_size, 1)
+    lines = [s[:-1] for s in lines]  # remove '\n' at end of sentence
+    batch = np.array(lines).reshape(batch_size, 1)
+    
+    return batch
+
 
 
 def awkfy_batch(batch: np.ndarray):
@@ -66,30 +103,33 @@ def awkfy_batch(batch: np.ndarray):
     return output
 
 
-def tokenize_batch(batch: np.ndarray, tokenizer):
+
+def tokenize_batch(batch: np.ndarray, tokenizer, max_len=100):
     """
     Returns a tokenized array of the batch.
     """
-    ids = np.array([tokenizer.encode(s[0]).ids for s in batch])
+    ids = np.array([tokenizer.encode('[CLS]' + s[0] + '[SEP]').ids for s in batch])
+    ids = padding(ids, max_len=max_len)
     return ids
+
+
+def padding(x, max_len=100):
+    # 패딩을 수행한다.
+    return tf.keras.preprocessing.sequence.pad_sequences(x, maxlen=max_len, padding="post")
 
 
 if __name__ == '__main__':
     
     # get data
-    data = get_dataset('./data/raw')
-    print(data)
-    print("--------------------------------------------------")
+    dataset_batch_init('./data/raw', './data/batch')
 
     # awkfy batch
-    batch = np.array(
-        ["선생님 안녕하세요 이건 축구공이에요 잘부탁드립니다"]*32
-    ).reshape(32, 1)  # (32, 1)
+    batch = get_batch(0, batch_directory='./data/batch')
     output = awkfy_batch(batch)
     pprint(output)
     print("--------------------------------------------------")
 
     # tokenize batch
     tk = joblib.load('./tokenizer.joblib')
-    output = tokenize_batch(batch, tk)
-    pprint(output)
+    tokenized = tokenize_batch(batch, tk)
+    pprint(tokenized)

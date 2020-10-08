@@ -103,4 +103,5 @@ def polish_josa(pos):
         pos[i] = (josa, 'Josa')
     return pos
 
-print(polish_josa([('선생님', 'Noun'), ('안녕하세요', 'Adjective'), (' ', ''), ('이건', 'Noun'), (' ', ''), ('축구공', 'Noun'), ('들', 'Suffix'), (' ', ''), ('에요', 'Josa'), (' ', ''), ('잘', 'VerbPrefix'), ('부탁드립니다', 'Adjective')]))
+if __name__ == '__main__':
+    print(polish_josa([('선생님', 'Noun'), ('안녕하세요', 'Adjective'), (' ', ''), ('이건', 'Noun'), (' ', ''), ('축구공', 'Noun'), ('들', 'Suffix'), (' ', ''), ('에요', 'Josa'), (' ', ''), ('잘', 'VerbPrefix'), ('부탁드립니다', 'Adjective')]))
