@@ -6,7 +6,7 @@ class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
         super(CustomSchedule, self).__init__()
 
         self.d_model = d_model
-        self.d_model = tf.cast(self.d_model, tf.float32)
+        self.d_model = tf.cast(self.d_model, opt.float_dtype)
 
         self.warmup_steps = warmup_steps
 
@@ -14,7 +14,8 @@ class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
         arg1 = tf.math.rsqrt(step)
         arg2 = step * (self.warmup_steps ** -1.5)
 
-        return tf.math.rsqrt(self.d_model) * tf.math.minimum(arg1, arg2)
+        lr = tf.math.rsqrt(self.d_model) * tf.math.minimum(arg1, arg2)
+        return lr
 
 
 learning_rate = CustomSchedule(opt.d_model)

@@ -1,9 +1,18 @@
 import tensorflow as tf
 import numpy as np
+from tensorflow.keras.layers import Activation
+import tensorflow.keras.backend as K
+from options import *
+import math
+
+tf.keras.backend.set_floatx(float_dtype_str)
+
+def gelu(x):
+    return 0.5 * x * (1 + tf.tanh(tf.sqrt(2 / tf.cast(np.pi, float_dtype)) * (x + 0.044715 * tf.pow(x, 3))))
 
 
 def get_angles(pos, i, d_model):
-    angle_rates = 1 / np.power(10000, (2 * (i // 2)) / np.float32(d_model))
+    angle_rates = 1 / np.power(10000, (2 * (i // 2)) / float_dtype_np(d_model))
     return pos * angle_rates
 
 
@@ -20,17 +29,18 @@ def positional_encoding(position, d_model):
 
     pos_encoding = angle_rads[np.newaxis, ...]
 
-    return tf.cast(pos_encoding, dtype=tf.float32)
+    return tf.cast(pos_encoding, dtype=float_dtype)
 
 
 def create_padding_mask(seq):
     # 패딩 부분은 1 아닌 부분은 0으로 변환
-    seq = tf.cast(tf.math.equal(seq, 0), tf.float32)
+    seq = tf.cast(tf.math.equal(seq, 0), float_dtype)
     return seq[:, tf.newaxis, tf.newaxis, :]  # (batch_size, 1, 1, seq_len)
 
 
 def create_look_ahead_mask(size):
     mask = 1 - tf.linalg.band_part(tf.ones((size, size)), -1, 0)
+    mask = tf.cast(mask, float_dtype)
     return mask  # (seq_len, seq_len)
 
 
@@ -39,7 +49,7 @@ def scaled_dot_product_attention(q, k, v, mask):
     qk = tf.matmul(q, k, transpose_b=True)  # (..., seq_len_q, seq_len_k)
 
     # qk를 sqrt(dk)로 나누기
-    dk = tf.cast(tf.shape(k)[-1], tf.float32)
+    dk = tf.cast(tf.shape(k)[-1], float_dtype)
     scaled_attention_logits = qk / tf.math.sqrt(dk)
 
     # 패딩 부분은 매우 작은 값으로 (attention 연산에서 제외하기 위해)
@@ -107,7 +117,9 @@ class MultiHeadAttention(tf.keras.layers.Layer):
 def pointwise_ffn(d_model, dff):
     # point wise feed forward neural network
     return tf.keras.Sequential([
-        tf.keras.layers.Dense(dff, activation='gelu'),  # (batch_size, seq_len, dff)
+        tf.keras.layers.Dense(dff),  # (batch_size, seq_len, dff)
+        tf.keras.layers.Activation(gelu),
+        tf.keras.layers.Dropout(dropout_rate),
         tf.keras.layers.Dense(d_model)  # (batch_size, seq_len, d_model)
     ])
 
@@ -200,7 +212,7 @@ class Encoder(tf.keras.layers.Layer):
 
         # embedding
         x = self.embedding(x)  # (batch_size, input_seq_len, d_model)
-        x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32))
+        x *= tf.math.sqrt(tf.cast(self.d_model, float_dtype))
         # positional encoding
         x += self.pos_encoding[:, :seq_len, :]
 
@@ -234,7 +246,7 @@ class Decoder(tf.keras.layers.Layer):
 
         # embedding
         x = self.embedding(x)  # (batch_size, target_seq_len, d_model)
-        x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32))
+        x *= tf.math.sqrt(tf.cast(self.d_model, float_dtype))
         # positional encoding
         x += self.pos_encoding[:, :seq_len, :]
 
@@ -315,6 +327,6 @@ train_loss = tf.keras.metrics.Mean(name='train_loss')
 train_accuracy = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
 
 train_step_signature = [
-    tf.TensorSpec(shape=(None, None), dtype=tf.int64),
-    tf.TensorSpec(shape=(None, None), dtype=tf.int64),
+    tf.TensorSpec(shape=(None, None), dtype=int_dtype),
+    tf.TensorSpec(shape=(None, None), dtype=int_dtype),
 ]
