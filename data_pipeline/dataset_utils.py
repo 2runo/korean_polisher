@@ -64,7 +64,7 @@ def get_batch(index, batch_directory='./data/batch', batch_size=32):
     with open(filename, 'r', encoding='utf-8') as f:
         lines = f.readlines()
     
-    lines = [s[:-1] for s in lines]  # remove '\n' at end of sentence
+    lines = [s[:-1] if s[-1] == '\n' else s for s in line]  # remove '\n' at end of sentence
     batch = np.array(lines).reshape(batch_size, 1)
     
     return batch
