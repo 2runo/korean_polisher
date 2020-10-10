@@ -18,4 +18,6 @@ class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
         return lr
 
 
-learning_rate = CustomSchedule(opt.d_model)
+learning_rate = CustomSchedule(opt.d_model**2)
+
+

@@ -117,7 +117,6 @@ for epoch in range(last_epoch, EPOCHS):
 
     # inp -> portuguese, tar -> english
     for iteration in range(last_batch_iter, n_batch):
-        #print('batch_iter:', iteration)
         # 데이터 가져오기
         # 배치는 1000부터 있으므로 (0~999까지는 test data임) iteration+1000을 함.
         batch = get_batch(iteration+1000, batch_directory='./data/batch')
