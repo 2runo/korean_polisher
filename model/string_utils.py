@@ -80,10 +80,16 @@ def shuffle_few_words(words, n=2):
     n = 0
     while shuffled == words[i:i+n]:
         shuffled = shuffle(words[i:i + n])
-        if n > 10:
+        if n > 100:
             break
         n += 1
     return words[:i] + shuffled + words[i+n:]
+
+
+def shuffle_few_words(words):
+    i = random.randint(0, len(words) - 2)
+    r = words[:i] + [words[i+1]] + [words[i]] + words[i+2:]
+    return r
 
 
 def match_by_length(text, lst):

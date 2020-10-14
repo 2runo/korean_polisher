@@ -8,10 +8,10 @@ float_dtype_np = np.float32
 float_dtype_str = 'float32'
 
 vocab_size = 5000
-num_layers = 6
-d_model = 768
-dff = 1024
-num_heads = 12
+num_layers = 5
+d_model = 256
+dff = 512
+num_heads = 16
 
 input_vocab_size = vocab_size
 target_vocab_size = vocab_size

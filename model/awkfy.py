@@ -94,11 +94,13 @@ def shuffle_word(text):
     # 이웃한 두 단어를 선택해서 위치를 바꿈
 
     # 띄어쓰기 교정
-    pos = okt.pos(text)
-    words = word_space(pos)
 
     # 단어 위치 바꾸기
-    words = shuffle_few_words(words.split(' '))
+    words = shuffle_few_words(text.split(' '))
+    if len(text.split(' ')) > 15:
+        words = shuffle_few_words(words)
+    if len(text.split(' ')) > 30:
+        words = shuffle_few_words(words)
     return ' '.join(words)
 
 ### 뜬금없는 단어 삽입 ###
@@ -183,3 +185,6 @@ if __name__ == '__main__':
     print('결과:', replace_word('선생님 안녕하세요 이건 축구공이에요 잘부탁드립니다'))
     print('결과:', replace_word('선생님 안녕하세요 이건 축구공이에요 잘부탁드립니다'))
     print('결과:', replace_word('선생님 안녕하세요 이건 축구공이에요 잘부탁드립니다'))
+
+    print('==짬뽕==')
+    print('결과:', reverse_plural(attach_josa(insert_pronoun(replace_word('선생님 안녕하세요 이건 축구공이에요 잘부탁드립니다')))))

@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import joblib
 import tensorflow as tf
+import time
 
 from awkfy import *
 
@@ -89,25 +90,18 @@ def awkfy_batch(batch: np.ndarray):
         7: lambda x: replace_word(x),
     }
 
-    """
-    output = []
-    for i in range(batch_size):
-        num = np.random.randint(0, 8)
-        func = commands[num]
-        output.append(func(batch[i]))
-
-    output = np.array(output).reshape(shape)
-    """
     output = []
 
     for i in range(batch_size):
         try:
             output.append(commands[np.random.randint(0, 8)](batch[i]))
         except Exception as err:
-            #print('An error was occurred during awkfying:', err)
-            #print('Text:', batch[i])
-            output.append(batch[i])
-    #output = np.array([commands[np.random.randint(0, 8)](batch[i]) for i in range(batch_size)]).reshape(shape)
+            try:
+                # 오류 발생 -> 한번만 더 시도
+                output.append(commands[np.random.randint(0, 8)](batch[i]))
+            except:
+                # 오류 두 번 연속 발생 -> 원본 사용
+                output.append(batch[i])
     return np.array(output).reshape(shape)
 
 
@@ -126,12 +120,40 @@ def padding_(x, max_len=100):
     return tf.keras.preprocessing.sequence.pad_sequences(x, maxlen=max_len, padding="post")
 
 
+def awkfy_dataset(tk, batch_directory='./data/batch', save_directory='./data/epoch0_batch'):
+    if not os.path.isdir(save_directory):
+        os.mkdir(save_directory)
+    t = time.time()
+    for i in range(1011, 879215):
+        batch = get_batch(i, batch_directory=batch_directory)
+        output = awkfy_batch(batch)
+        r = []
+        for j in range(len(output)):
+            if output[j] == batch[j]:
+                r.append(awkfy_batch(np.array([output[j]]))[0])
+            else:
+                r.append(output[j])
+        output = np.array(r.copy())
+
+        r = '\n'.join(['[SEP]'.join(j) for j in zip(batch.reshape(-1).tolist(), output.reshape(-1).tolist())])
+        with open(save_directory + '/batch{}.txt'.format(i), 'w', encoding='utf8') as f:
+            f.write(r)
+
+        if i % 100 == 0:
+            print(i, time.time() - t)
+
+
 if __name__ == '__main__':
     # 데이터 들어왔을 때 한번만 실행
     #dataset_batch_init('./data/raw', './data/batch')
 
-    # 테스트 데이터 만들기
     tk = joblib.load('./tokenizer/tokenizer.joblib')
+
+    # 배치 awkfy
+    awkfy_dataset(tk)
+    sdf
+
+    # 테스트 데이터 만들기
     print(get_batch(0, batch_directory='./data/test_batch'))
     sdf
     inp = np.array([])

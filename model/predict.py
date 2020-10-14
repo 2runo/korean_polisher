@@ -1,3 +1,6 @@
+"""
+학습된 모델 테스트
+"""
 try:
     from .transformer import *
     from .scheduler import *
@@ -85,6 +88,8 @@ def predict(sentence):
     r, attention_weight = evaluate(sentence)
     return tk.decode(r)
 
+
+print('문장을 입력하세요.')
 while True:
     inp = input(':')
     print(predict(inp))
