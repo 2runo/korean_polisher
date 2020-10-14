@@ -19,11 +19,6 @@ def get_elmo_embedding_model(checkpoint_filename, vocab_size=5000, max_len=100, 
     embedding = layers[1]
     lstm_forward_1, lstm_forward_2 = layers[2], layers[4]
     lstm_backward_1, lstm_backward_2 = layers[3], layers[5]
-    s1, s2, s3 =\
-        tf.Variable(random.random(), trainable=True, name='s1'),\
-        tf.Variable(random.random(), trainable=True, name='s2'),\
-        tf.Variable(random.random(), trainable=True, name='s3')
-    gamma = tf.Variable(random.random(), trainable=True, name='gamma')
 
 
     # forward pass
@@ -32,12 +27,10 @@ def get_elmo_embedding_model(checkpoint_filename, vocab_size=5000, max_len=100, 
     hidden_forward_1, hidden_backward_1 = lstm_forward_1(hidden_forward_embedding), lstm_backward_1(hidden_backward_embedding)
     hidden_forward_2, hidden_backward_2 = lstm_forward_2(hidden_forward_1), lstm_backward_2(hidden_backward_1)
 
-    hidden_1 = tf.keras.layers.Concatenate()([hidden_forward_embedding, hidden_backward_embedding]) * s1
-    hidden_2 = tf.keras.layers.Concatenate()([hidden_forward_1, hidden_backward_1]) * s2
-    hidden_3 = tf.keras.layers.Concatenate()([hidden_forward_2, hidden_backward_2]) * s3
-    hidden = tf.keras.layers.Add()([hidden_1, hidden_2, hidden_3])
-
-    outputs = hidden * gamma
+    hidden_1 = tf.keras.layers.Concatenate()([hidden_forward_embedding, hidden_backward_embedding])
+    hidden_2 = tf.keras.layers.Concatenate()([hidden_forward_1, hidden_backward_1])
+    hidden_3 = tf.keras.layers.Concatenate()([hidden_forward_2, hidden_backward_2])
+    outputs = tf.keras.layers.Add()([hidden_1, hidden_2, hidden_3])
 
 
     # model
