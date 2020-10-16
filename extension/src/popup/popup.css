@@ -90,7 +90,7 @@ setting {
 .no #resultUnknown {
     animation: onResultN 0.2s ease forwards;
 }
-/*욕설 감지기가 꺼져 있을 때*/
+/*Korean Polisher가 꺼져 있을 때*/
 .no #explainOff {
     display: none;
 }
