@@ -25,7 +25,7 @@ chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
     if (changeInfo.status == 'complete') {
         console.log('completed');
         if (await isTurnOn()) {
-            filtering(tab);  // 댓글 수집&필터링 수행
+            filtering(tab);  // 탭에서 tracker.js 코드 실행
         } else {
             // 꺼져 있으면 -> 종료 (작동하지 않음)
             console.log('꺼져 있음');
