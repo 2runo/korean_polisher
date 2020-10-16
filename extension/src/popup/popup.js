@@ -20,7 +20,7 @@ for (var i=0; i<toggle.length; i++) {
 
 
 function Start() {
-    // 설정에서 욕설 감지기 켜져 있나 꺼져 있나 확인하여 자동으로 켜거나 끄기
+    // 설정에서 Korean Polisher 켜져 있나 꺼져 있나 확인하여 자동으로 켜거나 끄기
     chrome.storage.sync.get('turn', function(data) {
         if (Object.keys(data).length == 0) {
             var value = 'on';
@@ -36,12 +36,12 @@ function Start() {
     });
 }
 function onStart() {
-    // 욕설 감지기 켜기
+    // Korean Polisher 켜기
     document.getElementsByTagName('article')[0].className = "no";
     document.getElementById("onoffCont").getElementsByClassName("onoffToggle")[0].className = "onoffToggle on";
 }
 function offStart() {
-    // 욕설 감지기 끄기
+    // Korean Polisher 끄기
     document.getElementsByTagName('article')[0].className = "ffo";
     document.getElementById("onoffCont").getElementsByClassName("onoffToggle")[0].className = "onoffToggle off";
 }
