@@ -38,7 +38,7 @@ async function getSync(name, def) {
     return ret;
 }
 async function isTurnOn() {
-    // 욕설 감지기 켜져 있는가?
+    // Korean Polisher 켜져 있는가?
     var setting = await getSync('turn', 'on');
     if (setting == 'on')
         return true;
