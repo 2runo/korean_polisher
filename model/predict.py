@@ -44,12 +44,11 @@ def evaluate(inp_sentence):
     start_token = [2]  # [CLS] token
     end_token = [3]  # [SEP] token
 
-    # inp sentence is portuguese, hence adding the start and end token
+    # 인코딩 (토크나이징)
     encoder_input = tokenize_batch([[inp_sentence]], tk)
     encoder_input = tf.cast(encoder_input, int_dtype)
 
-    # as the target is english, the first word to the transformer should be the
-    # english start token.
+    # 디코더 input
     decoder_input = [2]  # [CLS] token
     output = tf.expand_dims(decoder_input, 0)
     output = tf.cast(output, int_dtype)
@@ -68,20 +67,18 @@ def evaluate(inp_sentence):
                                                      combined_mask,
                                                      dec_padding_mask)
 
-        # select the last word from the seq_len dimension
+        # 가장 마지막 단어만
         predictions = predictions[:, -1:, :]  # (batch_size, 1, vocab_size)
 
         predicted_id = tf.cast(tf.argmax(predictions, axis=-1), int_dtype)
         output = tf.concat([output, predicted_id], axis=-1)
         predicted_id = predicted_id.numpy()[0][0]
 
-        # return the result if the predicted_id is equal to the end token
-        if predicted_id == 3:  # [SEP] token이라면?
-            #return tf.squeeze(output, axis=0), attention_weights
+        if predicted_id == 3:
+            # [SEP] token이라면? -> 문장 끝
             return result, attention_weights
 
-        # concatentate the predicted_id to the output which is given to the decoder
-        # as its input.
+        # 예측 결과 합치기
         result.append(predicted_id)
 
     #return tf.squeeze(output, axis=0), attention_weights
