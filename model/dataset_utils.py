@@ -1,3 +1,6 @@
+"""
+데이터를 로드하고 전처리하는 generator
+"""
 import os
 from pprint import pprint
 import numpy as np
