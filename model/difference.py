@@ -76,6 +76,7 @@ def jun(diff):
         i -= 1
     return list(reversed(result))
 
+
 def difference(text1, text2):
     diff = get_difference(text1, text2, join=False)
     return jun(comb(diff))

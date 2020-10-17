@@ -8,8 +8,8 @@ try:
 except:
     from options import *
 
-tf.keras.backend.set_floatx(float_dtype_str)
 
+tf.keras.backend.set_floatx(float_dtype_str)
 
 
 def gelu(x):

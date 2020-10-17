@@ -12,18 +12,21 @@ import time, os
 
 
 def ckpt_save(epoch, batch_iter):
-    # 체크포인트 저장 (epoch, batch_iter도 저장)
+    """체크포인트 저장 (epoch, batch_iter도 저장)"""
+
     if not os.path.isdir(checkpoint_path):
         os.mkdir(checkpoint_path)
-    with open(checkpoint_path + '/latest_epoch.txt', 'w') as f:
+    with open(f"{checkpoint_path}/latest_epoch.txt", 'w') as f:
         f.write(str(epoch))
-    with open(checkpoint_path + '/latest_batch_iter.txt', 'w') as f:
+    with open(f"{checkpoint_path}/latest_batch_iter.txt", 'w') as f:
         f.write(str(batch_iter))
+    
     return ckpt_manager.save()
 
 
 def evaluate(inp, tar):
-    # test loss, acc 계산
+    """test loss, acc 계산"""
+
     def split_batch(iterable, n=1):
         # data를 batch 크기로 slice
         l = len(iterable)
@@ -59,7 +62,7 @@ def evaluate(inp, tar):
 
 
 def predict(inp_sentence):
-    # input 텍스트 예측
+    """input 텍스트 예측"""
 
     # 인코딩 (토크나이징)
     encoder_input = tokenize_batch([[inp_sentence]], tk)
@@ -77,12 +80,15 @@ def predict(inp_sentence):
             encoder_input, output)
 
         # predictions.shape == (batch_size, seq_len, vocab_size)
-        predictions, attention_weights = transformer(encoder_input,
-                                                     output,
-                                                     False,
-                                                     enc_padding_mask,
-                                                     combined_mask,
-                                                     dec_padding_mask)
+        predictions, attention_weights = \
+            transformer(
+                encoder_input,
+                output,
+                False,
+                enc_padding_mask,
+                combined_mask,
+                dec_padding_mask
+            )
 
         # 가장 마지막 단어만
         predictions = predictions[:, -1:, :]  # (batch_size, 1, vocab_size)
@@ -102,9 +108,10 @@ def predict(inp_sentence):
 
 
 def demo():
-    # 'demo.txt'의 텍스트를 예측하여 출력
+    """'demo.txt'의 텍스트를 예측하여 출력"""
+
     try:
-        with open('demo.txt', 'r', encoding='utf8') as f:
+        with open('./demo.txt', 'r', encoding='utf8') as f:
             d = f.read()
         for i in d.split('\n'):
             if not len(i) == 0:
@@ -115,7 +122,7 @@ def demo():
 
 
 def history(test_loss, test_acc):
-    with open('history.txt', 'a+') as f:
+    with open('./history.txt', 'a+') as f:
         f.write('\n%s %s' % (test_loss, test_acc))
 
 
@@ -170,10 +177,10 @@ if __name__ == '__main__':
     if ckpt_manager.latest_checkpoint:
         # 체크포인트 불러오기
         ckpt.restore(ckpt_manager.latest_checkpoint)
-        print('체크포인트 불러옴!')
-        with open(checkpoint_path + '/latest_epoch.txt', 'r') as f:
+        print("체크포인트 불러옴!")
+        with open(f"{checkpoint_path}/latest_epoch.txt", 'r') as f:
             last_epoch = int(f.read())
-        with open(checkpoint_path + '/latest_batch_iter.txt', 'r') as f:
+        with open(f"{checkpoint_path}/latest_batch_iter.txt", 'r') as f:
             last_batch_iter = int(f.read())
     #print(transformer.encoder.enc_layers[0].ffn.weights)
     #sdf
@@ -210,7 +217,7 @@ if __name__ == '__main__':
             if np.random.randint(0, 2):
                 # 50% 확률로 -> awkfy 한번 더
                 output = awkfy_batch(output)
-                print('one more awkfy!', end='\r')
+                print("one more awkfy!", end='\r')
             # tokenizing
             inp = tokenize_batch(output, tk)  # 어색한 문장 -> inp
             tar = tokenize_batch(batch, tk)  # 자연스러운 문장 -> tar
@@ -223,28 +230,25 @@ if __name__ == '__main__':
             # 학습
             train_step(inp, tar)
 
-            if iteration % 50 == 0:# or (iteration + 1) % 50 == 0:
-                print('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
-                    epoch, iteration, train_loss.result(), train_accuracy.result()))
+            if iteration % 50 == 0:  # or (iteration + 1) % 50 == 0:
+                print(f"Epoch {epoch} Batch {iteration} Loss {train_loss.result():.4f} Accuracy {train_accuracy.result():.4f}")
                 # metrics reset (초기화하지 않으면 중첩됨 -> 정확한 평가 불가능)
                 train_loss.reset_states()
                 train_accuracy.reset_states()
-            if iteration % 1000 == 0:# or (iteration + 1) % 1000 == 0:
+            if iteration % 1000 == 0:  # or (iteration + 1) % 1000 == 0:
                 ckpt_save_path = ckpt_save(epoch, iteration)
                 test_loss, test_acc = evaluate(test_inp, test_tar)  # test loss, acc
-                print('evaluating..', end='\r')
-                print('test loss, test acc:', test_loss, test_acc)
+                print("evaluating..", end='\r')
+                # print("test loss, test acc:", test_loss, test_acc)
+                print(f"test loss, test acc: {test_loss} {test_acc}")
                 # test loss, acc 파일에 기록
                 history(test_loss, test_acc)
                 # demo
                 demo()
 
         if (epoch + 1) % 5 == 0:
-            print('Saving checkpoint for epoch {} at {}'.format(epoch,
-                                                                ckpt_save_path))
+            print(f"Saving checkpoint for epoch {epoch} at {ckpt_save_path}")
 
-        print('Epoch {} Loss {:.4f} Accuracy {:.4f}'.format(epoch,
-                                                            train_loss.result(),
-                                                            train_accuracy.result()))
+        print(f"Epoch {epoch} Loss {train_loss.result():.4f} Accuracy {train_accuracy.result():.4f}")
 
-        print('Time taken for 1 epoch: {} secs\n'.format(time.time() - start))
+        print(f"Time taken for 1 epoch: {time.time() - start} secs\n")

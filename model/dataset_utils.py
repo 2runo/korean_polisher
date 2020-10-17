@@ -18,31 +18,31 @@ def dataset_batch_init(directory='./data/raw', batch_directory='./data/batch', b
     directory: './data/raw'
     batch_directory = './data/batch'
     """
-    root = os.getcwd()
-    data_dir = os.path.join(root, directory)
-    batch_dir = os.path.join(root, batch_directory)
-    if not os.path.exists(batch_dir):
-        os.mkdir(batch_dir)
+    
+    if not os.path.exists(batch_directory):
+        os.mkdir(batch_directory)
 
     # collect data from directory
-    file_list = os.listdir(os.path.join(data_dir))
+    file_list = os.listdir(directory)
     data = []
     for file in file_list:
-        filename = os.path.join(data_dir, file)
+        filename = os.path.join(directory, file)
         with open(filename, 'r', encoding='utf-8') as f:
             for line in f.readlines():
                 data.append(line)
 
+
+    # 480000 -> 15000(total_step) * 32(batch_size) * 1(sentence)
     # 480010 -> 15000 * 32 * 1 + 10
     data_num = len(data)
     total_step = data_num // batch_size  # 15000
     data = data[:batch_size * total_step]  # drop last in order to avoid error when reshaping
-    data = np.array(data).reshape(data_num // batch_size, batch_size,
-                                  -1)  # 480000 -> 15000(total_step) * 32(batch_size) * 1(sentence)
+    data = np.array(data).reshape(data_num // batch_size, batch_size, -1)
+
 
     # save to batch_dir
     for i, batch in enumerate(data):
-        filename = os.path.join(batch_dir, f'batch{i}.txt')
+        filename = os.path.join(batch_directory, f'batch{i}.txt')
         print(filename)
         with open(filename, 'w', encoding='utf-8') as f:
             text = ""
@@ -56,12 +56,12 @@ def get_batch(index, batch_directory='./data/batch', batch_size=32):
     """
     Returns text read from 'batch{index}.txt'.
     """
-    root = os.getcwd()
-    batch_dir = os.path.join(root, batch_directory)
-    filename = os.path.join(batch_dir, f'batch{index}.txt')
+    
+    filename = f'{batch_directory}/batch{index}.txt'
 
     with open(filename, 'r', encoding='utf-8') as f:
         lines = f.readlines()
+
 
     lines = [s[:-1] if s[-1] == '\n' else s for s in lines]  # remove '\n' at end of sentence
     batch = np.array(lines).reshape(batch_size, 1)
@@ -130,7 +130,7 @@ def tokenize_batch(batch: np.ndarray, tokenizer, max_len=100, padding=True):
 
 
 def padding_(x, max_len=100):
-    # 패딩을 수행한다.
+    """패딩을 수행한다."""
     return tf.keras.preprocessing.sequence.pad_sequences(x, maxlen=max_len, padding="post")
 
 
@@ -138,6 +138,8 @@ def awkfy_dataset(tk, batch_directory='./data/batch', save_directory='./data/epo
     if not os.path.isdir(save_directory):
         os.mkdir(save_directory)
     t = time.time()
+
+
     for i in range(1011, 879215):
         batch = get_batch(i, batch_directory=batch_directory)
         output = awkfy_batch(batch)
@@ -150,7 +152,7 @@ def awkfy_dataset(tk, batch_directory='./data/batch', save_directory='./data/epo
         output = np.array(r.copy())
 
         r = '\n'.join(['[SEP]'.join(j) for j in zip(batch.reshape(-1).tolist(), output.reshape(-1).tolist())])
-        with open(save_directory + '/batch{}.txt'.format(i), 'w', encoding='utf8') as f:
+        with open(f'{save_directory}/batch{i}.txt', 'w', encoding='utf-8') as f:
             f.write(r)
 
         if i % 100 == 0:
@@ -165,11 +167,10 @@ if __name__ == '__main__':
 
     # 배치 awkfy
     awkfy_dataset(tk)
-    sdf
 
     # 테스트 데이터 만들기
     print(get_batch(0, batch_directory='./data/test_batch'))
-    sdf
+    
     inp = np.array([])
     tar = np.array([])
     for j in range(2):

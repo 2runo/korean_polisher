@@ -5,34 +5,26 @@ from bs4 import BeautifulSoup
 import requests
 
 
-line = '-'*50
+line = '-' * 50
 headers = {
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
-    # 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:82.0) Gecko/20100101 Firefox/82.0'
 }
 
 # range of section
 SECTION_MIN = 100
 SECTION_MAX = 105
 
-# sometimes not enough articles
-# # number of articles to crawl
-# ARTICLE_NUM = 30
-
 
 # specified year for clearity
-def crawl_popular_page(year, date_list):  # crawl pages of date_list & save to sub_dir=f'./data/{year}'
-    root = os.getcwd()
-    data_dir = os.path.join(root, 'data')
+def crawl_popular_page(year, date_list):  
+    """crawl pages of date_list & save to sub_dir=f'./data/{year}'"""
+    
+    data_dir = './data'
     if not os.path.exists(data_dir):
         os.mkdir(data_dir)
-    
+
 
     for date in date_list:
-
-        ''' sub_dir = os.path.join(data_dir, date)
-        if not os.path.exists(sub_dir):
-            os.mkdir(sub_dir) '''
         
         # task: add contents to text and write every date
         text = ""
@@ -51,7 +43,6 @@ def crawl_popular_page(year, date_list):  # crawl pages of date_list & save to s
                 break
 
             soup = BeautifulSoup(html.text, 'lxml')
-            # metadata = soup.find_all('div', class_='ranking_headline')
 
             # find number of articles
             # in order to avoid IndexError,
@@ -67,7 +58,6 @@ def crawl_popular_page(year, date_list):  # crawl pages of date_list & save to s
 
 
             for index in range(0, ARTICLE_NUM):
-                # title = title_list[index].text.strip()  # 제목
                 conURL = conURL_list[index]  # 본문 URL
 
                 # crawl conURL
@@ -86,33 +76,24 @@ def crawl_popular_page(year, date_list):  # crawl pages of date_list & save to s
                     contents = con_soup.find('div', id='articleBodyContents').text.strip()
 
                     text += f'{contents}\n'
-
-                    ''' text = f"{title}\n{contents}"
-                    
-                    filename = os.path.join(sub_dir, f'{date}-{section}-{index+1:0>2}.txt')
-                    with open(filename, 'w', encoding='utf-8') as f:
-                        f.write(text) '''
-                
                 except:
                     pass
         
-        # task: save to './data/2013/' & merge files to './data/2013.txt'
-        sub_dir = os.path.join(data_dir, year)  # './data/2013/'
+        # task: save to './data/2010/' & merge files to './data/2010.txt'
+        sub_dir = os.path.join(data_dir, year)  # './data/2010/'
         if not os.path.exists(sub_dir):
             os.mkdir(sub_dir)
         
-        filename = os.path.join(sub_dir, f'{date}.txt')  # './data/2013/20130101.txt'
+        filename = os.path.join(sub_dir, f'{date}.txt')  # './data/2010/20100101.txt'
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(text)
         
-        print(f'{date} complete')
-
+        print(f"{date} complete")
 
 
 def gen_date_list(start_year, end_year):
 
     current_datetime = time.strftime('%Y%m%d')
-    # current_year = current_datetime[0:4]  # crawl start_year to current_year
 
     day_common_year = ['31', '28', '31', '30', '31', '30', '31', '31', '30', '31', '30', '31']
     day_leap_year = ['31', '29', '31', '30', '31', '30', '31', '31', '30', '31', '30', '31']
@@ -150,28 +131,15 @@ def is_leap_year(year: str):
         return 0
 
 
-# def merge_files(date_list, merged_file_name):
-# added year for clearity
-def merge_files(year, merged_file_name):  # year: 2013, merged_file_name: '2013.txt'
-    root = os.getcwd()
-    data_dir = os.path.join(root, 'data')
+def merge_files(year, merged_file_name):  # year: 2010, merged_file_name: '2010.txt'
 
-    merged_file = os.path.join(data_dir, merged_file_name)
+    merged_file = f'./data/{merged_file_name}'
     with open(merged_file, 'w', encoding='utf-8') as merged_f:
-        ''' for date in date_list:
-            sub_dir = os.path.join(data_dir, date)
-            file_list: list = os.listdir(sub_dir)
-            file_list = list(map(lambda x: os.path.join(sub_dir, x), file_list))
-            # file_list = list(map(lambda x: os.path.join(data_dir, file_list)))  # ./data/{date}
-            for file in file_list:
-                with open(file, 'r', encoding='utf-8') as f:
-                    text = f.read()
-                    text = preprocess(text)
-                    merged_f.write(text) '''
         
-        sub_dir = os.path.join(data_dir, year)  # read files from sub_dir='./data/2013/'
-        file_list: list = os.listdir(sub_dir)
-        file_list = list(map(lambda x: os.path.join(sub_dir, x), file_list))
+        sub_dir = f'./data/{year}'  # read files from sub_dir='./data/2010'
+        file_list: list = os.listdir(sub_dir)  # list of files
+        file_list = list(map(lambda x: f'{sub_dir}/{x}', file_list))  # map file names
+
 
         for file in file_list:
             with open(file, 'r', encoding='utf-8') as f:
@@ -181,6 +149,7 @@ def merge_files(year, merged_file_name):  # year: 2013, merged_file_name: '2013.
 
 
 def preprocess(text):
+    """Basic preprocessing."""
     # remove parenthesis
     text = re.sub(r'\([^)]*\)', '', text)
     text = re.sub(r'\[[^]]*\]', '', text)
@@ -192,6 +161,7 @@ def preprocess(text):
     text = re.sub(r'\S*.com\S*\s?', '', text)
     text = re.sub(r'\S*.co.kr\S*\s?', '', text)
 
+    # remove certain characters
     text = re.sub(r'▶[^\n]*\n', '', text)
     text = re.sub(r'☞[^\n]*\n', '', text)
     text = re.sub(r'●[^\n]*\n', '', text)
