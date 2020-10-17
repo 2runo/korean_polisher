@@ -7,7 +7,7 @@
 - [체크포인트](https://drive.google.com/drive/folders/1WGtpaz0pMwkNPR6Ek3UitPUHHSkp0KLW?usp=sharing)를 다운받은 후 `model` 폴더 안에 압축을 풀어 `model/checkpoints` 폴더에 체크포인트 파일들을 넣습니다.
 - 밑의 의존성 문단에 있는 패키지를 설치합니다.
 - cmd 또는 터미널에서 `cd model; python server.py`를 입력해 `server.py`를 실행합니다.
-- chrome://extensions/에 들어가 개발자 모드를 켜고 ‘압축해제된 확장 프로그램을 로드합니다’를 누른 후 프로젝트의 디렉토리를 선택합니다.
+- chrome://extensions/에 들어가 개발자 모드를 켜고 ‘압축해제된 확장 프로그램을 로드합니다’를 누른 후 프로젝트의 디렉토리(`extension`)를 선택합니다.
 - 브라우저에서 글을 입력하는 도중에 프로그램이 어색한 문장을 감지해 수정해 줍니다.
 
 ## 의존성
