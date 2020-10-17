@@ -32,6 +32,9 @@ for (var i in $('textarea').toArray()) {
     // textarea에 hightlights 섹션 추가
     // hightlight는 단어에 밑줄을 긋는 역할을 수행한다.
     var _element = $('textarea')[i];
+    var w = _element.getBoundingClientRect().width;
+    var h = _element.getBoundingClientRect().height;
+    console.log(_element.offsetHeight, _element.offsetWidth, $(_element).css('width'), _element.getBoundingClientRect())
     var parent = _element.parentNode;
     var container = document.createElement('div');
     container.className = "container";
@@ -41,19 +44,46 @@ for (var i in $('textarea').toArray()) {
     backdrop.className = "backdrop";
     var highlights = document.createElement('div');
     highlights.className = "highlights";
+    console.log(w, h);
+    highlights.style.width = w;
+    highlights.style.height = h;
     backdrop.appendChild(highlights);
+    backdrop.style.width = w;
+    backdrop.style.height = h;
     container.appendChild(backdrop);
     
-    var curseInformContainer = document.createElement('div');
-    curseInformContainer.className = "curse-inform-container";
-    var curseInformContainerHead = document.createElement('div');
-    curseInformContainerHead.className = "curse-inform-container-head";
-    var curseInformContainerBody = document.createElement('div');
-    curseInformContainerBody.className = "curse-inform-container-body";
-    curseInformContainer.appendChild(curseInformContainerHead);
-    curseInformContainer.appendChild(curseInformContainerBody);
-    document.getElementsByTagName('body')[0].appendChild(curseInformContainer);
+    
+
+    // $(curseInformContainer).css('width', $(_element).css('width'));
+    // $(curseInformContainer).css('height', $(_element).css('height'));
+    // $(highlights).css('width', $(_element).css('width'));
+    // $(highlights).css('height', $(_element).css('height'));
+
+
 }
+
+var curseInformContainer = document.createElement('div');
+curseInformContainer.className = "curse-inform-container";
+var curseInformContainerHead = document.createElement('div');
+curseInformContainerHead.className = "curse-inform-container-head";
+var curseInformContainerBody = document.createElement('div');
+curseInformContainerBody.className = "curse-inform-container-body";
+curseInformContainer.appendChild(curseInformContainerHead);
+curseInformContainer.appendChild(curseInformContainerBody);
+document.getElementsByTagName('body')[0].appendChild(curseInformContainer);
+
+setInterval(function() {
+    for (var i in $('textarea').toArray()) {
+        var _element = $('textarea')[i];
+        var w = _element.getBoundingClientRect().width;
+        var h = _element.getBoundingClientRect().height;
+
+        $('.highlights')[i].style.width = w + 'px';
+        $('.highlights')[i].style.height = h + 'px';
+        $('.backdrop')[i].style.width = w + 'px';
+        $('.backdrop')[i].style.height = h + 'px';
+    }
+}, 10);
 
 var $container = $('.container');
 var $backdrop = $('.backdrop');
@@ -106,8 +136,9 @@ function markCSS() {
     }
 }
 
-$('.container, .backdrop').css('width', '100%');
-$('.container, .backdrop, textarea').css('height', '102px'); 
+//$('.container, .backdrop').css('width', '100%');
+//$('.container, .backdrop, textarea').css('height', '102px'); 
+//$('.container, .backdrop').css('height', '102px'); 
 
 $('.highlights, textarea').css('padding', '9px 10px'); 
 $('.highlights, textarea').css('font', '16px "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", Dotum, "돋움", "Noto Sans KR", "Nanum Gothic", "Lato", Helvetica, sans-serif'); 
@@ -138,7 +169,7 @@ function handleScroll() {
 
 function bindEvents() {
      $textarea.on({
-         'input': handleInput,
+         //'input': handleInput,
          'scroll': handleScroll
      });
 }
@@ -169,6 +200,7 @@ $('textarea').on('keyup', async function(e) {
 
 $('.curse-inform-container').on('click', (ev) => {
     var to = currentInformEle.getAttribute('to');
+    var textarea = currentInformEle.parentElement.parentElement.parentElement.getElementsByTagName('textarea')[0];
     var children = currentInformEle.parentElement.children;
     var nextEle = undefined;
     var value = '';
@@ -200,7 +232,8 @@ $('.curse-inform-container').on('click', (ev) => {
     }
     // 수정 내용 적용
     currentInformEle.outerHTML = "<plain>" + to + "</plain>";
-    $('textarea').val(value);
+    console.log(textarea);
+    $(textarea).val(value);
 
     $('.curse-inform-container').css('opacity', '0');
     $('.curse-inform-container')[0].animate([{opacity:1}, {opacity:0}], 100);
@@ -222,7 +255,8 @@ function onSuccess(e) {
                 console.log(i);
                 html = html.replace('[P' + i + ']', "</plain><mark style='position:relative' class='curse-curse' to='" + data['result'][i] + "'>" + data['org'][i] +"</mark><plain>");
             html += "</plain>";
-            $highlights.html(html);
+            console.log('awefyhywaefedrfaawf', e.currentTarget.parentElement.getElementsByClassName('highlights'))
+            $(e.currentTarget.parentElement.getElementsByClassName('highlights')[0]).html(html);
             markCSS();
 
             e.currentTarget.addEventListener('mousemove', (ev) => {

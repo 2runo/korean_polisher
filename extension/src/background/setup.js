@@ -15,6 +15,17 @@ xhr.onreadystatechange = function()
             if(xhr2.readyState == XMLHttpRequest.DONE && xhr2.status == 200)
             {
                 window['tracker'] = xhr2.responseText;
+                // jquery code
+                var xhr3 = new XMLHttpRequest();
+                xhr3.open('GET', chrome.extension.getURL('/src/background/jquery-ui.min.js'), true);
+                xhr3.onreadystatechange = function()
+                {
+                    if(xhr3.readyState == XMLHttpRequest.DONE && xhr3.status == 200)
+                    {
+                        window['jquery-ui'] = xhr3.responseText;
+                    }
+                };
+                xhr3.send();
             }
         };
         xhr2.send();
