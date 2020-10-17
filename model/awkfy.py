@@ -1,4 +1,6 @@
-# 문장을 어색하게 만드는 코드
+"""
+문장을 어색하게 만드는 코드
+"""
 import random
 import numpy as np
 from konlpy.tag import Okt
