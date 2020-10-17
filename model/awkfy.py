@@ -1,10 +1,10 @@
 # 문장을 어색하게 만드는 코드
+import random
+import numpy as np
 from konlpy.tag import Okt
+import hgtk
 from string_utils import *
 from awkfy_options import *
-import numpy as np
-import random
-import hgtk
 
 okt = Okt()
 
@@ -34,10 +34,12 @@ def replace_josa(text):
     pos[idx] = to_josa
     return ''.join(pos)
 
+
 ### 존댓말 어색화 ###
 def awkfy_honorific(text):
     # ex) 나는 축구가 좋아 -> 저는 축구가 좋아 / 저는 축구가 좋아요 -> 저는 축구가 좋아
     pass
+
 
 ### 단어 글자 위치 바꾸기 ###
 def shuffle_letter(text):
@@ -54,6 +56,7 @@ def shuffle_letter(text):
 
     return ''.join(pos)
 
+
 ### 뜬금없이 조사 붙이기 ###
 def attach_josa(text):
     # ex)  안녕하세요 반가워요 -> 안녕하세요는 반가워요
@@ -66,6 +69,7 @@ def attach_josa(text):
     to_josa = random.choice(JOSA_LIST)  # 붙일 조사 선택
     words[idx] += to_josa
     return ' '.join(words)
+
 
 ### 단수,복수 뒤바꾸기 ###
 def reverse_plural(text):
@@ -88,6 +92,7 @@ def reverse_plural(text):
 
     return ''.join([i[0] for i in pos])
 
+
 ### 단어 위치 바꾸기 ###
 def shuffle_word(text):
     # ex) 나는 밥을 먹어 -> 밥을 나는 먹어
@@ -103,6 +108,7 @@ def shuffle_word(text):
         words = shuffle_few_words(words)
     return ' '.join(words)
 
+
 ### 뜬금없는 단어 삽입 ###
 def insert_word(text):
     words = text.split(' ')
@@ -110,12 +116,14 @@ def insert_word(text):
     words.insert(random.randint(0, len(words) - 1), to_word)
     return ' '.join(words)
 
+
 ### 뜬금없는 대명사 삽입 ###
 def insert_pronoun(text):
     words = text.split(' ')
     to_word = random.choice(PRONOUNS)  # 삽입할 단어
     words.insert(random.randint(0, len(words) - 1), to_word)
     return ' '.join(words)
+
 
 ### 미리 지정된 단어 교체 ###
 def replace_word(text):

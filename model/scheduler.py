@@ -2,7 +2,6 @@ import tensorflow as tf
 import options as opt
 
 
-
 class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
     def __init__(self, d_model, warmup_steps=4000):
         super(CustomSchedule, self).__init__()
@@ -24,10 +23,8 @@ class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
         return lr
 
 
-
 learning_rate = CustomSchedule(200000)
 #print(learning_rate(tf.cast(1140, dtype=tf.float32)))
 #import matplotlib.pyplot as plt
 #plt.plot(learning_rate(tf.range(100000, dtype=tf.float32)))
 #plt.show()
-

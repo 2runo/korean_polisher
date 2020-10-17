@@ -1,5 +1,5 @@
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
 
 int_dtype = tf.int16
 int_dtype_str = 'int16'

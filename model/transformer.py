@@ -1,12 +1,12 @@
-import tensorflow as tf
+import math
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras.layers import Activation
 import tensorflow.keras.backend as K
 try:
     from .options import *
 except:
     from options import *
-import math
 
 tf.keras.backend.set_floatx(float_dtype_str)
 

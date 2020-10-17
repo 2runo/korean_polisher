@@ -163,7 +163,6 @@ def merge_files(year, merged_file_name):  # year: 2013, merged_file_name: '2013.
             file_list: list = os.listdir(sub_dir)
             file_list = list(map(lambda x: os.path.join(sub_dir, x), file_list))
             # file_list = list(map(lambda x: os.path.join(data_dir, file_list)))  # ./data/{date}
-
             for file in file_list:
                 with open(file, 'r', encoding='utf-8') as f:
                     text = f.read()

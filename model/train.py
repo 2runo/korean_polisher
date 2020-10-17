@@ -10,37 +10,6 @@ except:
     from dataset_utils import *
 import time, os
 
-transformer = Transformer(num_layers, d_model, num_heads, dff,
-                          input_vocab_size, target_vocab_size,
-                          pe_input=input_vocab_size,
-                          pe_target=target_vocab_size,
-                          rate=dropout_rate)
-
-'''for i in range(100):
-    print(transformer.layers[i].num_layer)
-    print(dir(transformer.layers[i]))
-'''
-optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
-
-ckpt = tf.train.Checkpoint(transformer=transformer,
-                           optimizer=optimizer)
-
-ckpt_manager = tf.train.CheckpointManager(ckpt, checkpoint_path, max_to_keep=5)
-
-last_epoch = 0
-last_batch_iter = -1
-if ckpt_manager.latest_checkpoint:
-    # 체크포인트 불러오기
-    ckpt.restore(ckpt_manager.latest_checkpoint)
-    print('체크포인트 불러옴!')
-    with open(checkpoint_path + '/latest_epoch.txt', 'r') as f:
-        last_epoch = int(f.read())
-    with open(checkpoint_path + '/latest_batch_iter.txt', 'r') as f:
-        last_batch_iter = int(f.read())
-
-
-#print(transformer.encoder.enc_layers[0].ffn.weights)
-#sdf
 
 def ckpt_save(epoch, batch_iter):
     # 체크포인트 저장 (epoch, batch_iter도 저장)
@@ -173,70 +142,109 @@ def train_step(inp, tar):
     train_accuracy(tar_real, predictions)
 
 
-tk = joblib.load('./tokenizer/tokenizer.joblib')  # 토크나이저
+if __name__ == '__main__':
+    # model
+    transformer = Transformer(
+        num_layers, d_model, num_heads, dff, input_vocab_size, target_vocab_size,
+        pe_input=input_vocab_size,
+        pe_target=target_vocab_size,
+        rate=dropout_rate
+    )
+    '''for i in range(100):
+        print(transformer.layers[i].num_layer)
+        print(dir(transformer.layers[i]))
+    '''
 
-test_inp, test_tar = joblib.load('./data/testdata.joblib')  # 테스트 데이터
-test_inp = test_inp[:10000]
-test_tar = test_tar[:10000]
+    # optimizer
+    optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
 
-demo()
 
-# 학습
-for epoch in range(last_epoch, EPOCHS):
-    start = time.time()
+    # checkpoint
+    ckpt = tf.train.Checkpoint(transformer=transformer,
+                            optimizer=optimizer)
 
-    n_batch = len(os.listdir('./data/batch'))
+    ckpt_manager = tf.train.CheckpointManager(ckpt, checkpoint_path, max_to_keep=5)
 
-    # inp -> portuguese, tar -> english
-    for iteration in range(last_batch_iter+2, n_batch, BATCH_SIZE//32):
-        # 데이터 가져오기
-        # 배치는 1011부터 있으므로 (0~999까지는 날아갔고 1000~1010까지는 test data임) iteration+1010을 함.
+    last_epoch = 0
+    last_batch_iter = -1
+    if ckpt_manager.latest_checkpoint:
+        # 체크포인트 불러오기
+        ckpt.restore(ckpt_manager.latest_checkpoint)
+        print('체크포인트 불러옴!')
+        with open(checkpoint_path + '/latest_epoch.txt', 'r') as f:
+            last_epoch = int(f.read())
+        with open(checkpoint_path + '/latest_batch_iter.txt', 'r') as f:
+            last_batch_iter = int(f.read())
+    #print(transformer.encoder.enc_layers[0].ffn.weights)
+    #sdf
 
-        # 배치 크기 64 (32 * 2)
-        batch = get_batch(iteration+1000, batch_directory='./data/batch')
-        for i in range(1, BATCH_SIZE // 32):
-            batch = np.concatenate([batch, get_batch(iteration+1000+i, batch_directory='./data/batch')])  # 배치 크기 32보다 크면 배치 32짜리 파일 여러 개 로드
 
-        # 문장 어색하게 하기
-        output = awkfy_batch(batch)
-        if np.random.randint(0, 2):
-            # 50% 확률로 -> awkfy 한번 더
-            output = awkfy_batch(output)
-            print('one more awkfy!', end='\r')
-        # tokenizing
-        inp = tokenize_batch(output, tk)  # 어색한 문장 -> inp
-        tar = tokenize_batch(batch, tk)  # 자연스러운 문장 -> tar
-        inp = tf.convert_to_tensor(inp, dtype=int_dtype)
-        tar = tf.convert_to_tensor(tar, dtype=int_dtype)
+    # load tokenizer
+    tk = joblib.load('./tokenizer/tokenizer.joblib')  # 토크나이저
 
-        # 현재 step
-        cur_step = n_batch * epoch + iteration
+    test_inp, test_tar = joblib.load('./data/testdata.joblib')  # 테스트 데이터
+    test_inp = test_inp[:10000]
+    test_tar = test_tar[:10000]
 
-        # 학습
-        train_step(inp, tar)
+    demo()
 
-        if iteration % 50 == 0:# or (iteration + 1) % 50 == 0:
-            print('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
-                epoch, iteration, train_loss.result(), train_accuracy.result()))
-            # metrics reset (초기화하지 않으면 중첩됨 -> 정확한 평가 불가능)
-            train_loss.reset_states()
-            train_accuracy.reset_states()
-        if iteration % 1000 == 0:# or (iteration + 1) % 1000 == 0:
-            ckpt_save_path = ckpt_save(epoch, iteration)
-            test_loss, test_acc = evaluate(test_inp, test_tar)  # test loss, acc
-            print('evaluating..', end='\r')
-            print('test loss, test acc:', test_loss, test_acc)
-            # test loss, acc 파일에 기록
-            history(test_loss, test_acc)
-            # demo
-            demo()
 
-    if (epoch + 1) % 5 == 0:
-        print('Saving checkpoint for epoch {} at {}'.format(epoch,
-                                                            ckpt_save_path))
+    # 학습
+    for epoch in range(last_epoch, EPOCHS):
+        start = time.time()
 
-    print('Epoch {} Loss {:.4f} Accuracy {:.4f}'.format(epoch,
-                                                        train_loss.result(),
-                                                        train_accuracy.result()))
+        n_batch = len(os.listdir('./data/batch'))
 
-    print('Time taken for 1 epoch: {} secs\n'.format(time.time() - start))
+        # inp -> portuguese, tar -> english
+        for iteration in range(last_batch_iter+2, n_batch, BATCH_SIZE//32):
+            # 데이터 가져오기
+            # 배치는 1011부터 있으므로 (0~999까지는 날아갔고 1000~1010까지는 test data임) iteration+1010을 함.
+
+            # 배치 크기 64 (32 * 2)
+            batch = get_batch(iteration+1000, batch_directory='./data/batch')
+            for i in range(1, BATCH_SIZE // 32):
+                batch = np.concatenate([batch, get_batch(iteration+1000+i, batch_directory='./data/batch')])  # 배치 크기 32보다 크면 배치 32짜리 파일 여러 개 로드
+
+            # 문장 어색하게 하기
+            output = awkfy_batch(batch)
+            if np.random.randint(0, 2):
+                # 50% 확률로 -> awkfy 한번 더
+                output = awkfy_batch(output)
+                print('one more awkfy!', end='\r')
+            # tokenizing
+            inp = tokenize_batch(output, tk)  # 어색한 문장 -> inp
+            tar = tokenize_batch(batch, tk)  # 자연스러운 문장 -> tar
+            inp = tf.convert_to_tensor(inp, dtype=int_dtype)
+            tar = tf.convert_to_tensor(tar, dtype=int_dtype)
+
+            # 현재 step
+            cur_step = n_batch * epoch + iteration
+
+            # 학습
+            train_step(inp, tar)
+
+            if iteration % 50 == 0:# or (iteration + 1) % 50 == 0:
+                print('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
+                    epoch, iteration, train_loss.result(), train_accuracy.result()))
+                # metrics reset (초기화하지 않으면 중첩됨 -> 정확한 평가 불가능)
+                train_loss.reset_states()
+                train_accuracy.reset_states()
+            if iteration % 1000 == 0:# or (iteration + 1) % 1000 == 0:
+                ckpt_save_path = ckpt_save(epoch, iteration)
+                test_loss, test_acc = evaluate(test_inp, test_tar)  # test loss, acc
+                print('evaluating..', end='\r')
+                print('test loss, test acc:', test_loss, test_acc)
+                # test loss, acc 파일에 기록
+                history(test_loss, test_acc)
+                # demo
+                demo()
+
+        if (epoch + 1) % 5 == 0:
+            print('Saving checkpoint for epoch {} at {}'.format(epoch,
+                                                                ckpt_save_path))
+
+        print('Epoch {} Loss {:.4f} Accuracy {:.4f}'.format(epoch,
+                                                            train_loss.result(),
+                                                            train_accuracy.result()))
+
+        print('Time taken for 1 epoch: {} secs\n'.format(time.time() - start))

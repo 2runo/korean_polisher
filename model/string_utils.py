@@ -128,4 +128,3 @@ def polish_josa(pos):
                 josa = REVERSED_JOSA_PARALLEL[key] + josa[len(key):]
         pos[i] = (josa, 'Josa')
     return pos
-

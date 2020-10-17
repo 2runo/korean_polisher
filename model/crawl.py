@@ -12,7 +12,6 @@ if __name__ == '__main__':
 
     ''' start_year = 2010
     end_year = 2010
-
     date_list = gen_date_list(start_year, end_year)
     # crawl_popular_page(date_list)
     merge_files(date_list, '2010.txt') '''
