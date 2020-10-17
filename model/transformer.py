@@ -4,10 +4,8 @@ from tensorflow.keras.layers import Activation
 import tensorflow.keras.backend as K
 try:
     from .options import *
-    from .elmo import get_elmo_model
 except:
     from options import *
-    from elmo import get_elmo_model
 import math
 
 tf.keras.backend.set_floatx(float_dtype_str)

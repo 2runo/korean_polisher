@@ -17,12 +17,12 @@ CORS(app)
 @app.post("/polish")
 @cross_origin(app)
 async def test(request):
-    print('TESTMODE!!\n'*10)
-    return json({
-        'org': ["있는", "이것", "것은"],
-        'pointed': '안녕하세요. 그러면서도 여전히 팔리는 [P0] 것을 보면 괜찮은 프로그램인 듯. 나는 오늘 [P1] 집에 가려고 한다는 [P2] 사실이다.',
-        'result': ['', '', '테스트']
-    })
+    #print('TESTMODE!!\n'*10)
+    #return json({
+    #    'org': ["있는", "이것", "것은"],
+    #    'pointed': '안녕하세요. 그러면서도 여전히 팔리는 [P0] 것을 보면 괜찮은 프로그램인 듯. 나는 오늘 [P1] 집에 가려고 한다는 [P2] 사실이다.',
+    #    'result': ['', '', '테스트']
+    #})
     text = request.form['text'][0]
 
     sentences = text.split('. ')
