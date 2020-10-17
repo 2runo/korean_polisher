@@ -89,16 +89,30 @@ def awkfy_batch(batch: np.ndarray):
         6: lambda x: insert_pronoun(x),
         7: lambda x: replace_word(x),
     }
+    commands = [
+        replace_josa,
+        replace_josa,
+        replace_josa,
+        #shuffle_letter,
+        attach_josa,
+        reverse_plural,
+        reverse_plural,
+        shuffle_word,
+        shuffle_word,
+        insert_word,
+        insert_pronoun,
+        replace_word
+    ]
 
     output = []
 
     for i in range(batch_size):
         try:
-            output.append(commands[np.random.randint(0, 8)](batch[i]))
+            output.append(commands[np.random.randint(0, len(commands))](batch[i]))
         except Exception as err:
             try:
                 # 오류 발생 -> 한번만 더 시도
-                output.append(commands[np.random.randint(0, 8)](batch[i]))
+                output.append(commands[np.random.randint(0, len(commands))](batch[i]))
             except:
                 # 오류 두 번 연속 발생 -> 원본 사용
                 output.append(batch[i])

@@ -11,7 +11,7 @@ except:
     from scheduler import *
     from options import *
     from dataset_utils import *
-import time, os
+import time, os, re
 
 transformer = Transformer(num_layers, d_model, num_heads, dff,
                           input_vocab_size, target_vocab_size,
@@ -36,6 +36,9 @@ if ckpt_manager.latest_checkpoint:
 
 tk = joblib.load('./tokenizer/tokenizer.joblib')  # 토크나이저
 
+
+def only_pure(text):
+    return ''.join(re.findall(r'[ㄱ-ㅎ가-힣0-9 ]', text))
 
 def evaluate(inp_sentence):
     start_token = [2]  # [CLS] token
@@ -85,11 +88,15 @@ def evaluate(inp_sentence):
     return result, attention_weights
 
 def predict(sentence):
+    if sentence.count(' ') == 0:
+        # 단어가 하나라면 -> 예측하지 않음
+        return sentence
     r, attention_weight = evaluate(sentence)
     return tk.decode(r)
 
 
-print('문장을 입력하세요.')
-while True:
-    inp = input(':')
-    print(predict(inp))
+if __name__ == "__main__":
+    print('문장을 입력하세요.')
+    while True:
+        inp = input(':')
+        print(predict(inp))

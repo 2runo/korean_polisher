@@ -17,7 +17,7 @@ for i in d:
     except:
         pass
 
-plt.plot(loss, c='r')
+plt.plot(loss, 'r')
 plt.plot(acc, c='g')
 plt.legend(['loss', 'acc'])
 plt.show()

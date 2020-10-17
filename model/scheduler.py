@@ -11,7 +11,7 @@ class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
         self.d_model = tf.cast(self.d_model, opt.float_dtype)
 
         self.warmup_steps = warmup_steps
-        self.batch = 64 / 32  # 실제 배치 사이즈 / 32
+        self.batch = opt.BATCH_SIZE / 32  # 실제 배치 사이즈 / 32
         self.batch = tf.cast(self.batch, dtype=tf.float32)
 
 
@@ -19,7 +19,7 @@ class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
         arg1 = tf.math.rsqrt(step * self.batch)
         arg2 = (step * self.batch) * (self.warmup_steps ** -1.5)
         lr = tf.math.rsqrt(self.d_model) * tf.math.minimum(arg1, arg2)
-        lr *= 0.7
+        lr *= 1
         tf.print('lr:', lr, 'step:', step * self.batch, '              ', end='\r')
         return lr
 

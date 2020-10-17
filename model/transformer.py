@@ -2,10 +2,17 @@ import tensorflow as tf
 import numpy as np
 from tensorflow.keras.layers import Activation
 import tensorflow.keras.backend as K
-from options import *
+try:
+    from .options import *
+    from .elmo import get_elmo_model
+except:
+    from options import *
+    from elmo import get_elmo_model
 import math
 
 tf.keras.backend.set_floatx(float_dtype_str)
+
+
 
 def gelu(x):
     return 0.5 * x * (1 + tf.tanh(tf.sqrt(2 / tf.cast(np.pi, float_dtype)) * (x + 0.044715 * tf.pow(x, 3))))
@@ -199,6 +206,7 @@ class Encoder(tf.keras.layers.Layer):
         self.num_layers = num_layers
 
         self.embedding = tf.keras.layers.Embedding(input_vocab_size, d_model)
+        #self.embedding = elmo_embedding
         self.pos_encoding = positional_encoding(maximum_position_encoding,
                                                 self.d_model)
 
@@ -212,6 +220,7 @@ class Encoder(tf.keras.layers.Layer):
 
         # embedding
         x = self.embedding(x)  # (batch_size, input_seq_len, d_model)
+
         x *= tf.math.sqrt(tf.cast(self.d_model, float_dtype))
         # positional encoding
         x += self.pos_encoding[:, :seq_len, :]
@@ -234,6 +243,7 @@ class Decoder(tf.keras.layers.Layer):
         self.num_layers = num_layers
 
         self.embedding = tf.keras.layers.Embedding(target_vocab_size, d_model)
+        #self.embedding = elmo_embedding
         self.pos_encoding = positional_encoding(maximum_position_encoding, d_model)
 
         self.dec_layers = [DecoderLayer(d_model, num_heads, dff, rate)

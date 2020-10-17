@@ -6,22 +6,88 @@ def get_difference(a: str, b: str, join=False):
     Returns the difference of two sentences.
     join: set this to True if the whole combined string is needed. Default: False.
     """
+    while '  ' in a:
+        a = a.replace('  ', ' ')
+    while '  ' in b:
+        b = b.replace('  ', ' ')
     a, b = a.split(' '), b.split(' ')
     diff = difflib.ndiff(a, b)
     if join:
         result = ''.join(diff)
     else:
-        result = list(diff)
-    
+        result = [i for i in diff if i != '?   -\n']
+        #result = list(diff)
+
     return result
 
 
-if __name__ == '__main__':
+def comb(diff):
+    # [' a', ' b', ' c', '+d', '+e', '-f'] -> [' ', ' ', ' ', '+de', '-f']
+    # 연속되는 같은 심볼의 글자를 합침
+    symbol = None
+    result = []
+    tmp = ''
+    for word in diff:
+        if word[0] == symbol:
+            tmp += word[1:]
+            continue
+        if tmp:
+            result.append(tmp)
+            tmp = ''
+            symbol = None
+        if word[0] == ' ':
+            result.append(word)
+        else:
+            symbol = word[0]
+            tmp = word
+    if tmp:
+        result.append(tmp)
+    return result
 
-    text_1 = "안녕 나는 사람이야"
-    text_2 = "안녕하 나 사람이야 잘가"
+
+def jun(diff):
+    # ['  안녕하세요', '- 안녕', '+ 하이'] -> ['안녕하세요', ['안녕', '하이']]
+    #                       '안녕하세요 안녕' 문장에서 '안녕'을 '하이'로 바꿔야 한다는 뜻.
+    # 어떤 부분을 어떻게 수정해야 할지 반환 {사용법: jun(comb(diff))}
+    result = []
+    i = len(diff) -1
+    while True:
+        if i < 0:
+            break
+        word = diff[i]
+        if i == 0:
+            pass
+        if word[0] == '+':
+            prev_word = diff[i - 1]
+            if prev_word[0] == '-':
+                result.append([prev_word[2:], word[2:]])
+            else:
+                result.append([prev_word[2:], prev_word[2:] + word[1:]])
+            i -= 1
+        elif word[0] == '-':
+            prev_word = diff[i - 1]
+            if prev_word[0] == '+':
+                result.append([word[2:], prev_word[2:]])
+                i -= 1
+            else:
+                result.append([word[2:], ''])
+        else:
+            result.append(word[2:])
+        i -= 1
+    return list(reversed(result))
+
+def difference(text1, text2):
+    diff = get_difference(text1, text2, join=False)
+    return jun(comb(diff))
+
+
+if __name__ == '__main__':
+    text_1 = "안녕하세요.  안녕 그러면서도 여전히 팔리는 있는 것을 보면 괜찮은 프로그램인 듯. 나는 오늘 이것 집에 간다."
+    text_2 = "안녕하세요. 하이 그러면서도 여전히 팔리는 것을 하나 두울 보면 괜찮은 프로그램인 듯. 나는 집에 간다"
 
     diff = get_difference(text_1, text_2, join=True)
     print(diff)
     diff = get_difference(text_1, text_2, join=False)
     print(diff)
+    print(comb(diff))
+    print(jun(comb(diff)))

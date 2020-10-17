@@ -16,6 +16,10 @@ transformer = Transformer(num_layers, d_model, num_heads, dff,
                           pe_target=target_vocab_size,
                           rate=dropout_rate)
 
+'''for i in range(100):
+    print(transformer.layers[i].num_layer)
+    print(dir(transformer.layers[i]))
+'''
 optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
 
 ckpt = tf.train.Checkpoint(transformer=transformer,
@@ -35,6 +39,9 @@ if ckpt_manager.latest_checkpoint:
         last_batch_iter = int(f.read())
 
 
+#print(transformer.encoder.enc_layers[0].ffn.weights)
+#sdf
+
 def ckpt_save(epoch, batch_iter):
     # 체크포인트 저장 (epoch, batch_iter도 저장)
     if not os.path.isdir(checkpoint_path):
@@ -53,7 +60,7 @@ def evaluate(inp, tar):
         l = len(iterable)
         for ndx in range(0, l, n):
             yield iterable[ndx:min(ndx + n, l)]
-    batch_size = 64  # validation batch
+    batch_size = BATCH_SIZE  # validation batch
     inp_batch = split_batch(inp, batch_size)
     tar_batch = split_batch(tar, batch_size)
 
@@ -181,15 +188,21 @@ for epoch in range(last_epoch, EPOCHS):
     n_batch = len(os.listdir('./data/batch'))
 
     # inp -> portuguese, tar -> english
-    for iteration in range(last_batch_iter+2, n_batch, 2):
+    for iteration in range(last_batch_iter+2, n_batch, BATCH_SIZE//32):
         # 데이터 가져오기
         # 배치는 1011부터 있으므로 (0~999까지는 날아갔고 1000~1010까지는 test data임) iteration+1010을 함.
 
         # 배치 크기 64 (32 * 2)
         batch = get_batch(iteration+1000, batch_directory='./data/batch')
-        batch = np.concatenate([batch, get_batch(iteration+1000+1, batch_directory='./data/batch')])  # 배치 크기 64이므로 배치 32짜리 파일 두 개 로드
+        for i in range(1, BATCH_SIZE // 32):
+            batch = np.concatenate([batch, get_batch(iteration+1000+i, batch_directory='./data/batch')])  # 배치 크기 32보다 크면 배치 32짜리 파일 여러 개 로드
+
         # 문장 어색하게 하기
         output = awkfy_batch(batch)
+        if np.random.randint(0, 2):
+            # 50% 확률로 -> awkfy 한번 더
+            output = awkfy_batch(output)
+            print('one more awkfy!', end='\r')
         # tokenizing
         inp = tokenize_batch(output, tk)  # 어색한 문장 -> inp
         tar = tokenize_batch(batch, tk)  # 자연스러운 문장 -> tar
@@ -202,13 +215,13 @@ for epoch in range(last_epoch, EPOCHS):
         # 학습
         train_step(inp, tar)
 
-        if iteration % 50 == 0 or (iteration + 1) % 50 == 0:
+        if iteration % 50 == 0:# or (iteration + 1) % 50 == 0:
             print('Epoch {} Batch {} Loss {:.4f} Accuracy {:.4f}'.format(
                 epoch, iteration, train_loss.result(), train_accuracy.result()))
             # metrics reset (초기화하지 않으면 중첩됨 -> 정확한 평가 불가능)
             train_loss.reset_states()
             train_accuracy.reset_states()
-        if iteration % 1000 == 0 or (iteration + 1) % 1000 == 0:
+        if iteration % 1000 == 0:# or (iteration + 1) % 1000 == 0:
             ckpt_save_path = ckpt_save(epoch, iteration)
             test_loss, test_acc = evaluate(test_inp, test_tar)  # test loss, acc
             print('evaluating..', end='\r')
