@@ -1,3 +1,6 @@
+"""
+뉴스 크롤링
+"""
 import os
 import re
 import time
