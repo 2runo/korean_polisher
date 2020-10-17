@@ -1,3 +1,7 @@
+"""
+string 관련 utils
+(awkfy.py에서 사용)
+"""
 import random
 import hgtk
 from awkfy_options import *
