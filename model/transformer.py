@@ -1,3 +1,6 @@
+"""
+Transformer 모델
+"""
 import math
 import numpy as np
 import tensorflow as tf
@@ -9,14 +12,16 @@ except:
     from options import *
 
 
-tf.keras.backend.set_floatx(float_dtype_str)
+tf.keras.backend.set_floatx(float_dtype_str)  # 모델에서 사용할 자료형 설정
 
 
 def gelu(x):
+    # gelu activation
     return 0.5 * x * (1 + tf.tanh(tf.sqrt(2 / tf.cast(np.pi, float_dtype)) * (x + 0.044715 * tf.pow(x, 3))))
 
 
 def get_angles(pos, i, d_model):
+    # positional_encoding에서 사용
     angle_rates = 1 / np.power(10000, (2 * (i // 2)) / float_dtype_np(d_model))
     return pos * angle_rates
 
@@ -44,6 +49,7 @@ def create_padding_mask(seq):
 
 
 def create_look_ahead_mask(size):
+    # look-ahead-mask
     mask = 1 - tf.linalg.band_part(tf.ones((size, size)), -1, 0)
     mask = tf.cast(mask, float_dtype)
     return mask  # (seq_len, seq_len)
@@ -85,13 +91,15 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         self.dense = tf.keras.layers.Dense(d_model)
 
     def split_heads(self, x, batch_size):
-        """self.num_heads에 따라 x를 분할한다. (num_heads, depth)
+        """
+        self.num_heads에 따라 x를 분할한다. (num_heads, depth)
         최종적으로 다음 shape를 반환한다 : (batch_size, num_heads, seq_len, depth)
         """
         x = tf.reshape(x, (batch_size, -1, self.num_heads, self.depth))
         return tf.transpose(x, perm=[0, 2, 1, 3])
 
     def call(self, v, k, q, mask):
+        # Multi-head attention 수행
         batch_size = tf.shape(q)[0]
 
         q = self.wq(q)  # (batch_size, seq_len, d_model)
@@ -316,6 +324,7 @@ def create_masks(inp, tar):
     return enc_padding_mask, combined_mask, dec_padding_mask
 
 
+# loss
 loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
     from_logits=True, reduction='none')
 
