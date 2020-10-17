@@ -17,10 +17,10 @@
         "default_popup": "src/popup/popup.html"
     },
     "icons": {
-        "32": "/images/icons/before_icon_32.png",
-        "64": "/images/icons/before_icon_64.png",
-        "128": "/images/icons/before_icon_128.png",
-        "256": "/images/icons/before_icon_256.png"
+        "32": "/images/icons/icon_32.png",
+        "64": "/images/icons/icon_64.png",
+        "128": "/images/icons/icon_128.png",
+        "256": "/images/icons/icon_256.png"
     },
     "externally_connectable": {
         "ids": ["*"]
