@@ -1,3 +1,6 @@
+"""
+모델 학습
+"""
 try:
     from .transformer import *
     from .scheduler import *
@@ -157,10 +160,6 @@ if __name__ == '__main__':
         pe_target=target_vocab_size,
         rate=dropout_rate
     )
-    '''for i in range(100):
-        print(transformer.layers[i].num_layer)
-        print(dir(transformer.layers[i]))
-    '''
 
     # optimizer
     optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
@@ -193,7 +192,7 @@ if __name__ == '__main__':
     test_inp = test_inp[:10000]
     test_tar = test_tar[:10000]
 
-    demo()
+    demo()  # 테스트 문장
 
 
     # 학습
@@ -215,7 +214,7 @@ if __name__ == '__main__':
             # 문장 어색하게 하기
             output = awkfy_batch(batch)
             if np.random.randint(0, 2):
-                # 50% 확률로 -> awkfy 한번 더
+                # 50% 확률로 -> 한번 더
                 output = awkfy_batch(output)
                 print("one more awkfy!", end='\r')
             # tokenizing
