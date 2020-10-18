@@ -2,6 +2,9 @@
 ## 소개
 <바른문장>은 어색한 한국어 문장을 자연스럽게 바꿔 주는 프로그램입니다.
 
+## 시연 영상
+https://youtu.be/USg-cSiLXTA
+
 ## 구동
 1. git clone을 통해 레포지토리를 클론하거나 Code > Download ZIP을 통해 프로젝트를 다운로드합니다.</li>
 2. [체크포인트](https://drive.google.com/drive/folders/1WGtpaz0pMwkNPR6Ek3UitPUHHSkp0KLW?usp=sharing)를 다운받은 후 `model` 폴더 안에 압축을 풀어 `model/checkpoints` 폴더에 체크포인트 파일들을 넣습니다.
