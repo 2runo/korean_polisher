@@ -185,6 +185,7 @@ $('textarea').on('keyup', async function(e) {
         // 텍스트를 입력한 게 아니라면? -> 종료
         return 0;
     }
+    $(e.currentTarget.parentElement.getElementsByClassName('highlights')).html('');
     let curHash = Math.random() * 100000;  // 고유 코드 (다른 listener가 실행됐는지 확인하기 위함)
     hash = curHash;
     await sleepMS(500);
