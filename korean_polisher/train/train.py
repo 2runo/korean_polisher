@@ -6,7 +6,7 @@ import os
 from .transformer import *
 from .scheduler import *
 from .options import *
-from ..predict.predict import *
+from .predict import *
 from ..dataset import *
 
 
