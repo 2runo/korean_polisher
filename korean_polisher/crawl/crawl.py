@@ -4,8 +4,9 @@
 import os
 import re
 import time
-from bs4 import BeautifulSoup
+
 import requests
+from bs4 import BeautifulSoup
 
 
 line = '-' * 50
