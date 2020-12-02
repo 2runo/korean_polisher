@@ -1,4 +1,4 @@
-from ..predict import predict
+from ..train.predict import predict
 
 
 print('문장을 입력하세요.')

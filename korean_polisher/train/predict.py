@@ -4,9 +4,9 @@
 import re
 import joblib
 
-from ..train.transformer import *
-from ..train.scheduler import *
-from ..train.options import *
+from .transformer import *
+from .scheduler import *
+from .options import *
 from ..dataset import *
 
 transformer = Transformer(num_layers, d_model, num_heads, dff,
@@ -30,7 +30,6 @@ if ckpt_manager.latest_checkpoint:
     print('체크포인트 불러옴!')
 
 
-# tk = joblib.load('./tokenizer/tokenizer.joblib')  # 토크나이저
 tk = joblib.load('../assets/tokenizer/tokenizer.joblib')  # 토크나이저
 
 

@@ -6,7 +6,7 @@ from ..train.transformer import *
 from ..train.scheduler import *
 from ..train.options import *
 from ..train.train import *
-from ..predict.predict import *
+from ..train.predict import *
 from ..dataset import *
 
 

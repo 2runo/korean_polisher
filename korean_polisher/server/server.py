@@ -6,7 +6,7 @@ from sanic import Sanic
 from sanic.response import json
 from sanic_cors import CORS, cross_origin
 
-from ..predict import *
+from ..train.predict import *
 from ..utils import difference
 
 app = Sanic("hello_example")
