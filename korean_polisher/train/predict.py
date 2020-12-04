@@ -34,7 +34,7 @@ if ckpt_manager.latest_checkpoint:
     print('체크포인트 불러옴!')
 
 
-tk = joblib.load('../assets/tokenizer/tokenizer.joblib')  # 토크나이저
+tk = joblib.load('./korean_polisher/assets/tokenizer/tokenizer.joblib')  # 토크나이저
 
 
 def only_pure(text):

@@ -52,7 +52,7 @@ if ckpt_manager.latest_checkpoint:
 
 
 # load tokenizer
-tk = joblib.load('./tokenizer/tokenizer.joblib')  # 토크나이저
+tk = joblib.load('./korean_polisher/assets/tokenizer/tokenizer.joblib')  # 토크나이저
 
 test_inp, test_tar = joblib.load('./data/testdata.joblib')  # 테스트 데이터
 test_inp = test_inp[:10000]
