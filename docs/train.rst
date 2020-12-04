@@ -3,17 +3,6 @@ korean_polisher.train
 
 .. contents::
 
-korean_polisher.train.CustomSchedule
-------------------------------------
-
-학습을 위한 스케줄 클래스(Adam의 인자로만 사용)
-
-.. code-block:: Python
-
-    CustomSchedule(
-        d_model
-    )
-
 korean_polisher.train.Transformer
 ---------------------------------
 
@@ -26,59 +15,69 @@ Transformer 모델
         target_vocab_size, pe_input, pe_target, rate=0.1
     )
 
-korean_polisher.train.임포트 가능한 것들
----------------------------------
+Arguments
+~~~~~~~~~
 
-loss_function,
-create_masks,
-create_padding_mask,
-create_look_ahead_mask,
-train_loss, train_accuracy, train_step_signature
+위에 있는 대로
 
-korean_polisher.train.demo
---------------------------------
+Attributes
+~~~~~~~~~~
+
+- encoder - 인코더
+- decoder - 디코더
+- final_layer - 최종 레이어
+- tk - 토크나이저
+- learning_rate - 학습률
+- optimizer - optimizer
+- ckpt - 체크포인트
+- ckpt_manager - 체크포인트 매니저
+
+Methods
+~~~~~~~
 
 .. code-block:: Python
 
-    demo()
-
-korean_polisher.train.train_step
---------------------------------
-
-.. code-block:: Python
-
-    train_step(
-        model, inp, tar
+    Transformer.call(
+        inp, tar, training,
+        enc_padding_mask, look_ahead_mask, dec_padding_mask
     )
 
-korean_polisher.train.ckpt_save
---------------------------------
-
-.. code-block:: Python
-
-    ckpt_save(
-        epoch, batch_iter
+    Transformer.train_step(
+        inp, tar
     )
 
-korean_polisher.train.history
---------------------------------
+    Transformer.predict(
+        inp_sentences
+    )
 
-.. code-block:: Python
+    Transformer.evaluate(
+        inp, tar
+    )
 
-    history(
+    Transformer.demo()
+
+    Transformer.ckpt_save(
+        epoch, batch_size
+    )
+
+    Transformer.history(
         test_loss, test_acc
     )
 
-korean_polisher.train.evaluate
+korean_polisher.train.train_loss
 --------------------------------
 
+train_loss
+
+korean_polisher.train.train_accuracy
+------------------------------------
+
+train_accuracy
+
+korean_polisher.train.get_model
+-------------------------------
+
+모델 반환
 .. code-block:: Python
 
-    evaluate(
-        model: Transformer, inp, tar
-    )
-
-korean_polisher.train.tk
---------------------------------
-
-토크나이저
+    get_model()

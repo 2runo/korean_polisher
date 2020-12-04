@@ -5,10 +5,8 @@ import joblib
 import tensorflow as tf
 
 from korean_polisher.train import (
-    CustomSchedule, Transformer,
-    train_step, ckpt_save, history, demo,
-    train_loss, train_accuracy,
-    evaluate
+    get_model,
+    train_loss, train_accuracy
 )
 from korean_polisher.train.options import *
 from korean_polisher.dataset import (
@@ -16,39 +14,20 @@ from korean_polisher.dataset import (
 )
 
 
-learning_rate = CustomSchedule(200000)
-
-
 # model
-transformer = Transformer(
-    num_layers, d_model, num_heads, dff, input_vocab_size, target_vocab_size,
-    pe_input=input_vocab_size,
-    pe_target=target_vocab_size,
-    rate=dropout_rate
-)
-
-# optimizer
-optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
-
-
-# checkpoint
-ckpt = tf.train.Checkpoint(transformer=transformer,
-                        optimizer=optimizer)
-
-ckpt_manager = tf.train.CheckpointManager(ckpt, checkpoint_path, max_to_keep=5)
+transformer = get_model()
 
 last_epoch = 0
 last_batch_iter = -1
-if ckpt_manager.latest_checkpoint:
+if transformer.ckpt_manager.latest_checkpoint:
     # 체크포인트 불러오기
-    ckpt.restore(ckpt_manager.latest_checkpoint)
+    transformer.ckpt.restore(transformer.ckpt_manager.latest_checkpoint)
     print("체크포인트 불러옴!")
     with open(f"{checkpoint_path}/latest_epoch.txt", 'r') as f:
         last_epoch = int(f.read())
     with open(f"{checkpoint_path}/latest_batch_iter.txt", 'r') as f:
         last_batch_iter = int(f.read())
 #print(transformer.encoder.enc_layers[0].ffn.weights)
-#sdf
 
 
 # load tokenizer
@@ -58,7 +37,7 @@ test_inp, test_tar = joblib.load('./data/testdata.joblib')  # 테스트 데이�
 test_inp = test_inp[:10000]
 test_tar = test_tar[:10000]
 
-demo()  # 테스트 문장
+transformer.demo()  # 테스트 문장
 
 
 # 학습
@@ -93,7 +72,7 @@ for epoch in range(last_epoch, EPOCHS):
         cur_step = n_batch * epoch + iteration
 
         # 학습
-        train_step(transformer, inp, tar)
+        transformer.train_step(inp, tar)
 
         if iteration % 50 == 0:  # or (iteration + 1) % 50 == 0:
             print(f"Epoch {epoch} Batch {iteration} Loss {train_loss.result():.4f} Accuracy {train_accuracy.result():.4f}")
@@ -101,15 +80,15 @@ for epoch in range(last_epoch, EPOCHS):
             train_loss.reset_states()
             train_accuracy.reset_states()
         if iteration % 1000 == 0:  # or (iteration + 1) % 1000 == 0:
-            ckpt_save_path = ckpt_save(epoch, iteration)
-            test_loss, test_acc = evaluate(transformer, test_inp, test_tar)  # test loss, acc
+            ckpt_save_path = transformer.ckpt_save(epoch, iteration)
+            test_loss, test_acc = transformer.evaluate(transformer, test_inp, test_tar)  # test loss, acc
             print("evaluating..", end='\r')
             # print("test loss, test acc:", test_loss, test_acc)
             print(f"test loss, test acc: {test_loss} {test_acc}")
             # test loss, acc 파일에 기록
-            history(test_loss, test_acc)
+            transformer.history(test_loss, test_acc)
             # demo
-            demo()
+            transformer.demo()
 
     if (epoch + 1) % 5 == 0:
         print(f"Saving checkpoint for epoch {epoch} at {ckpt_save_path}")
