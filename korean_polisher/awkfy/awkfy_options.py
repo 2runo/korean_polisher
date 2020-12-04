@@ -7,9 +7,9 @@ JOSA_PARALLEL = {'로': '으로', '를': '을', '가': '이',
 REVERSED_JOSA_PARALLEL = {val: key for key, val in JOSA_PARALLEL.items()}  # JOSA_PARALLEL의 반대 버전
 REVERSED_JOSA_PARALLEL['이에요'] = '예요'
 
-with open('assets/popular_nouns.txt', 'r', encoding='utf8') as f:
+with open('korean_polisher/assets/popular_nouns.txt', 'r', encoding='utf8') as f:
     POPULAR_NOUNS = f.read().split('\n')
-with open('assets/pronouns.txt', 'r', encoding='utf8') as f:
+with open('korean_polisher/assets/pronouns.txt', 'r', encoding='utf8') as f:
     PRONOUNS = f.read().split('\n')
-with open('assets/replace.txt', 'r', encoding='utf8') as f:
+with open('korean_polisher/assets/replace.txt', 'r', encoding='utf8') as f:
     REPLACES = {i.split('\t')[0] : i.split('\t')[1] for i in f.read().split('\n')}

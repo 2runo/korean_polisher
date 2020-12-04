@@ -1,13 +1,22 @@
+import os
 import time
+
 import joblib
 import tensorflow as tf
 
-from ..train.transformer import *
-from ..train.scheduler import *
-from ..train.options import *
-from ..train.train import *
-from ..train.predict import *
-from ..dataset import *
+from korean_polisher.train import (
+    CustomSchedule, Transformer,
+    train_step, ckpt_save, history, demo,
+    train_loss, train_accuracy,
+    evaluate
+)
+from korean_polisher.train.options import *
+from korean_polisher.dataset import (
+    awkfy_batch, tokenize_batch, get_batch
+)
+
+
+learning_rate = CustomSchedule(200000)
 
 
 # model
@@ -84,7 +93,7 @@ for epoch in range(last_epoch, EPOCHS):
         cur_step = n_batch * epoch + iteration
 
         # 학습
-        train_step(inp, tar)
+        train_step(transformer, inp, tar)
 
         if iteration % 50 == 0:  # or (iteration + 1) % 50 == 0:
             print(f"Epoch {epoch} Batch {iteration} Loss {train_loss.result():.4f} Accuracy {train_accuracy.result():.4f}")
@@ -93,7 +102,7 @@ for epoch in range(last_epoch, EPOCHS):
             train_accuracy.reset_states()
         if iteration % 1000 == 0:  # or (iteration + 1) % 1000 == 0:
             ckpt_save_path = ckpt_save(epoch, iteration)
-            test_loss, test_acc = evaluate(test_inp, test_tar)  # test loss, acc
+            test_loss, test_acc = evaluate(transformer, test_inp, test_tar)  # test loss, acc
             print("evaluating..", end='\r')
             # print("test loss, test acc:", test_loss, test_acc)
             print(f"test loss, test acc: {test_loss} {test_acc}")

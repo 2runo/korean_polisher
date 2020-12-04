@@ -1,4 +1,4 @@
-from ..train.predict import predict
+from korean_polisher.train.predict import predict
 
 
 print('문장을 입력하세요.')

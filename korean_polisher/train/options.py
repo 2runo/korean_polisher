@@ -21,6 +21,6 @@ target_vocab_size = vocab_size
 dropout_rate = 0.1
 
 EPOCHS = 20
-checkpoint_path = "./checkpoints"
+checkpoint_path = "./korean_polisher/checkpoints"
 MAX_LENGTH = 100
 BATCH_SIZE = 32

@@ -3,11 +3,18 @@
 """
 import os
 
-from .transformer import *
-from .scheduler import *
+from .transformer import (
+    Transformer,
+    loss_function, create_masks,
+    train_loss, train_accuracy, train_step_signature
+)
+from .predict import (
+    tk, optimizer, ckpt_manager
+)
 from .options import *
-from .predict import *
-from ..dataset import *
+from ..dataset import (
+    tokenize_batch
+)
 
 
 def ckpt_save(epoch, batch_iter):
@@ -23,7 +30,7 @@ def ckpt_save(epoch, batch_iter):
     return ckpt_manager.save()
 
 
-def evaluate(inp, tar):
+def evaluate(model: Transformer, inp, tar):
     """test loss, acc 계산"""
 
     def split_batch(iterable, n=1):
@@ -45,7 +52,7 @@ def evaluate(inp, tar):
         tar_real = tar[:, 1:]
 
         enc_padding_mask, combined_mask, dec_padding_mask = create_masks(inp, tar_inp)
-        predictions, _ = transformer(inp, tar_inp,
+        predictions, _ = model(inp, tar_inp,
                                      False,
                                      enc_padding_mask,
                                      combined_mask,
@@ -60,7 +67,7 @@ def evaluate(inp, tar):
     return r
 
 
-def predict(inp_sentence):
+def predict(model: Transformer, inp_sentence):
     """input 텍스트 예측"""
 
     # 인코딩 (토크나이징)
@@ -80,7 +87,7 @@ def predict(inp_sentence):
 
         # predictions.shape == (batch_size, seq_len, vocab_size)
         predictions, attention_weights = \
-            transformer(
+            model(
                 encoder_input,
                 output,
                 False,
@@ -126,14 +133,14 @@ def history(test_loss, test_acc):
 
 
 @tf.function(input_signature=train_step_signature)
-def train_step(inp, tar):
+def train_step(model: Transformer, inp, tar):
     tar_inp = tar[:, :-1]
     tar_real = tar[:, 1:]
 
     enc_padding_mask, combined_mask, dec_padding_mask = create_masks(inp, tar_inp)
 
     with tf.GradientTape() as tape:
-        predictions, _ = transformer(inp, tar_inp,
+        predictions, _ = model(inp, tar_inp,
                                      True,
                                      enc_padding_mask,
                                      combined_mask,
@@ -141,8 +148,8 @@ def train_step(inp, tar):
 
         loss = loss_function(tar_real, predictions)
 
-    gradients = tape.gradient(loss, transformer.trainable_variables)
-    optimizer.apply_gradients(zip(gradients, transformer.trainable_variables))
+    gradients = tape.gradient(loss, model.trainable_variables)
+    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
     train_loss(loss)
     train_accuracy(tar_real, predictions)

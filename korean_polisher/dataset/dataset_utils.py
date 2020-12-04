@@ -7,7 +7,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from ..awkfy import (
+from ..awkfy.awkfy import (
     attach_josa, replace_josa,
     reverse_plural, 
     shuffle_word,

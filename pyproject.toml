@@ -18,6 +18,9 @@ matplotlib = "^3.3.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.2"
+docutils = "^0.16"
+rstcheck = "^3.3.1"
+Pygments = "^2.7.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

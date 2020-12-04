@@ -24,6 +24,3 @@ class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
         lr *= 1
         tf.print(f"lr: {lr} step: {step * self.batch}              ", end='\r')
         return lr
-
-
-learning_rate = CustomSchedule(200000)

@@ -1,6 +1,9 @@
 **/.idea/
 **/.vscode/
 **/__pycache__/
-**/checkpoints/
+
 *.zip
+**/checkpoints/
+data/
+
 README.txt

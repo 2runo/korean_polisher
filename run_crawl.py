@@ -1,7 +1,7 @@
 """
 뉴스 크롤링
 """
-from .crawl import crawl_popular_page, gen_date_list, merge_files
+from korean_polisher.crawl import crawl_popular_page, gen_date_list, merge_files
 
 if __name__ == '__main__':
 

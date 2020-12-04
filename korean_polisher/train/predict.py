@@ -4,10 +4,13 @@
 import re
 import joblib
 
-from .transformer import *
-from .scheduler import *
+from .transformer import (
+    Transformer,
+    create_masks
+)
+from .scheduler import CustomSchedule
 from .options import *
-from ..dataset import *
+from ..dataset import tokenize_batch
 
 transformer = Transformer(num_layers, d_model, num_heads, dff,
                           input_vocab_size, target_vocab_size,
@@ -15,6 +18,7 @@ transformer = Transformer(num_layers, d_model, num_heads, dff,
                           pe_target=target_vocab_size,
                           rate=dropout_rate)
 
+learning_rate = CustomSchedule(200000)
 optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
 
 ckpt = tf.train.Checkpoint(transformer=transformer,

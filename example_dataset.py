@@ -1,14 +1,14 @@
 import numpy as np
 import joblib
-from ..dataset import (
+from korean_polisher.dataset import (
     awkfy_dataset, awkfy_batch, get_batch, tokenize_batch
 )
 
 
 # 데이터 들어왔을 때 한번만 실행
-#dataset_batch_init('./data/raw', './data/batch')
+# dataset_batch_init('./data/raw', './data/batch')
 
-tk = joblib.load('./tokenizer/tokenizer.joblib')
+tk = joblib.load('./korean_polisher/assets/tokenizer/tokenizer.joblib')
 
 # 배치 awkfy
 awkfy_dataset(tk)

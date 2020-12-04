@@ -1,4 +1,4 @@
-from ..awkfy import (
+from korean_polisher.awkfy import (
     attach_josa, replace_josa,
     reverse_plural, 
     shuffle_letter, shuffle_word,
