@@ -6,7 +6,6 @@ import joblib
 import numpy as np
 import tensorflow as tf
 
-# from .predict import tk, optimizer
 from .scheduler import CustomSchedule
 from .options import *
 from ..dataset import tokenize_batch
