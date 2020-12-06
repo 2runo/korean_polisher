@@ -372,7 +372,6 @@ class Transformer(tf.keras.Model):
         output = tf.cast(output, int_dtype)
         result = decoder_input.copy()
 
-
         for i in range(MAX_LENGTH):
             enc_padding_mask, combined_mask, dec_padding_mask = create_masks(
                 encoder_input, output)
@@ -436,9 +435,7 @@ class Transformer(tf.keras.Model):
             test_loss(loss)
             test_accuracy(tar_real, predictions)
 
-        r = test_loss.result().numpy(), test_accuracy.result().numpy()
-        del test_loss, test_accuracy
-        return r
+        return test_loss.result().numpy(), test_accuracy.result().numpy()
 
     def demo(self):
         """'demo.txt'의 텍스트를 예측하여 출력"""
@@ -466,7 +463,7 @@ class Transformer(tf.keras.Model):
         
         return self.ckpt_manager.save()
 
-    def history(self, test_loss, test_acc):
+    def _history(self, test_loss, test_acc):
         with open('./history.txt', 'a+') as f:
             f.write('\n%s %s' % (test_loss, test_acc))
 

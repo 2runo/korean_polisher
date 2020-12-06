@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import time
 
@@ -51,6 +52,8 @@ for epoch in range(last_epoch, EPOCHS):
         # 데이터 가져오기
         # 배치는 1011부터 있으므로 (0~999까지는 날아갔고 1000~1010까지는 test data임) iteration+1010을 함.
 
+        #print('lr: {}'.format(transformer.optimizer._lr))
+
         # 배치 크기 64 (32 * 2)
         batch = get_batch(iteration+1000, batch_directory='./data/batch')
         for i in range(1, BATCH_SIZE // 32):
@@ -58,10 +61,16 @@ for epoch in range(last_epoch, EPOCHS):
 
         # 문장 어색하게 하기
         output = awkfy_batch(batch)
-        if np.random.randint(0, 2):
-            # 50% 확률로 -> 한 번 더
-            output = awkfy_batch(output)
-            print("one more awkfy!", end='\r')
+        for i in range(len(output)):
+            for j in range(10):
+                if np.random.randint(0, max([2, len(output[i])//25])):
+                    # 특정 확률로 -> 한 번 더
+                    # 확률 : 50% -> 25% -> 12.5% -> ..
+                    # 문장이 길수록 확률 증가
+                    output[i] = awkfy_batch(np.array([output[i]]))
+                    print(f"{j} more awkfy in {i}!", end='\r')
+                else:
+                    break
         # tokenizing
         inp = tokenize_batch(output, tk)  # 어색한 문장 -> inp
         tar = tokenize_batch(batch, tk)  # 자연스러운 문장 -> tar
@@ -81,12 +90,12 @@ for epoch in range(last_epoch, EPOCHS):
             train_accuracy.reset_states()
         if iteration % 1000 == 0:  # or (iteration + 1) % 1000 == 0:
             ckpt_save_path = transformer.ckpt_save(epoch, iteration)
-            test_loss, test_acc = transformer.evaluate(transformer, test_inp, test_tar)  # test loss, acc
+            test_loss, test_acc = transformer.evaluate(test_inp, test_tar)  # test loss, acc
             print("evaluating..", end='\r')
             # print("test loss, test acc:", test_loss, test_acc)
             print(f"test loss, test acc: {test_loss} {test_acc}")
             # test loss, acc 파일에 기록
-            transformer.history(test_loss, test_acc)
+            transformer._history(test_loss, test_acc)
             # demo
             transformer.demo()
 

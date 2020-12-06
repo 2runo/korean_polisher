@@ -23,4 +23,4 @@ dropout_rate = 0.1
 EPOCHS = 20
 checkpoint_path = "./korean_polisher/checkpoints"
 MAX_LENGTH = 100
-BATCH_SIZE = 32
+BATCH_SIZE = 64

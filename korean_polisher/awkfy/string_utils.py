@@ -31,6 +31,7 @@ def insert_space_lst(pos, text):
             break
         n += 1
 
+
 def word_space(pos):
     # 품사만 보고 띄어쓰기
     r = ''
@@ -134,3 +135,4 @@ def polish_josa(pos):
                 josa = REVERSED_JOSA_PARALLEL[key] + josa[len(key):]
         pos[i] = (josa, 'Josa')
     return pos
+
