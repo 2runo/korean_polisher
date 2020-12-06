@@ -1,10 +1,4 @@
-from korean_polisher.awkfy import (
-    attach_josa, replace_josa,
-    reverse_plural, 
-    shuffle_letter, shuffle_word,
-    insert_word, insert_pronoun,
-    replace_word
-)
+from korean_polisher.awkfy import attach_josa, replace_josa, reverse_plural, shuffle_letter, shuffle_word, insert_word, insert_pronoun, replace_word
 
 
 if __name__ == '__main__':

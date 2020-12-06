@@ -7,13 +7,7 @@ import time
 import numpy as np
 import tensorflow as tf
 
-from ..awkfy.awkfy import (
-    attach_josa, replace_josa,
-    reverse_plural, 
-    shuffle_word,
-    insert_word, insert_pronoun,
-    replace_word
-)
+from ..awkfy import attach_josa, replace_josa, reverse_plural, shuffle_word, insert_word, insert_pronoun, replace_word
 
 """
 Note: run dataset_batch_init -> iter and run get_batch & awkfy_batch & tokenize_batch

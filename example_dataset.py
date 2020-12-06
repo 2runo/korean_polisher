@@ -1,8 +1,6 @@
 import numpy as np
 import joblib
-from korean_polisher.dataset import (
-    awkfy_dataset, awkfy_batch, get_batch, tokenize_batch
-)
+from korean_polisher.dataset import awkfy_dataset, awkfy_batch, get_batch, tokenize_batch
 
 
 # 데이터 들어왔을 때 한번만 실행

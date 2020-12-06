@@ -6,12 +6,8 @@ import random
 import numpy as np
 from konlpy.tag import Okt
 
-from .string_utils import (
-    only_pos, polish_josa, shuffle_few_letters, shuffle_few_words
-)
-from .awkfy_options import (
-    JOSA_LIST, POPULAR_NOUNS, PRONOUNS, REPLACES
-)
+from .string_utils import only_pos, polish_josa, shuffle_few_letters, shuffle_few_words
+from .awkfy_options import JOSA_LIST, POPULAR_NOUNS, PRONOUNS, REPLACES
 
 
 okt = Okt()

@@ -5,14 +5,9 @@ import time
 import joblib
 import tensorflow as tf
 
-from korean_polisher.train import (
-    get_model,
-    train_loss, train_accuracy
-)
+from korean_polisher.train import get_model, train_loss, train_accuracy
 from korean_polisher.train.options import *
-from korean_polisher.dataset import (
-    awkfy_batch, tokenize_batch, get_batch
-)
+from korean_polisher.dataset import awkfy_batch, tokenize_batch, get_batch
 
 
 # model
