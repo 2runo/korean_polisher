@@ -1,5 +1,10 @@
-import numpy as np
+import os
+import sys
+
 import joblib
+import numpy as np
+
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from korean_polisher.dataset import awkfy_dataset, awkfy_batch, get_batch, tokenize_batch
 
 
