@@ -26,7 +26,7 @@ https://youtu.be/USg-cSiLXTA
 
 1. 나무위키, 위키피디아 등에서 정형화된 말뭉치를 수집합니다.
 2. 문장을 어색하게 만드는 규칙을 작성합니다. (조사 바꾸기, 단어 섞기 등) [[코드 참조](https://github.com/2runo/korean_polisher/blob/master/korean_polisher/awkfy/awkfy.py)]
-3. (2.)에서 만든 규칙을 적용해 말뭉치 데이터를 어색하게 만들고 이를 복원하도록 트랜스포머(transformer) 모델을 학습합니다.
+3. 규칙을 적용해 말뭉치 데이터를 어색하게 만들고 이를 복원하도록 트랜스포머(transformer) 모델을 학습합니다.
 
 ## 노트
 |날짜|내용|
