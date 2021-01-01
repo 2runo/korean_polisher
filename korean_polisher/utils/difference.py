@@ -4,22 +4,72 @@
 import difflib
 
 
+WHITESPACE = {
+    '\n': '{:newline:}',
+    '\r': '{:return:}',
+    '\t': '{:tab:}',
+    '\v': '{:vertical:}',
+    '\f': '{:formfeed:}'
+}
+UPPER2LOWER = {
+    'ᄀ': 'ㄱ', 'ᄁ': 'ㄲ', 'ᄂ': 'ㄴ', 'ᄃ': 'ㄷ', 'ᄄ': 'ㄸ', 'ᄅ': 'ㄹ', 'ᄆ': 'ㅁ', 'ᄇ': 'ㅂ',
+    'ᄈ': 'ㅃ', 'ᄉ': 'ㅅ', 'ᄐ': 'ㅌ', 'ᄑ': 'ㅍ', 'ᄒ': 'ㅎ', 'ᄡ': 'ㅄ', 'ᅡ': 'ㅏ', 'ᅢ': 'ㅐ',
+    'ᅣ': 'ㅑ', 'ᅤ': 'ㅒ', 'ᅥ': 'ㅓ', 'ᅦ': 'ㅔ', 'ᅧ': 'ㅕ', 'ᅨ': 'ㅖ', 'ᅩ': 'ㅗ', 'ᅰ': 'ㅞ',
+    'ᅱ': 'ㅟ', 'ᅲ': 'ㅠ', 'ᅳ': 'ㅡ', 'ᅴ': 'ㅢ', 'ᅵ': 'ㅣ', 'ᅶ': 'ㅘ'
+}
+
+
+def replace_dict(t: str, d: dict, reverse: bool = False):
+    # dict에 따라 replace 수행 (reverse=True라면 replace 순서 바뀜)
+    # ex) f('hello my name', {'nam': 'NAM', 'my': 'i'}) -> 'hello i NAMe'
+    for key, val in d.items():
+        if reverse:
+            t = t.replace(val, key)
+        else:
+            t = t.replace(key, val)
+    return t
+
+
+def normalize(t: str):
+    # 연속 띄어쓰기 제거, 자모 replace
+    # ex) f('hello  my name ᄀᄀ') -> 'hello my name ㄱㄱ'
+    while '  ' in t:
+        t = t.replace('  ', ' ')
+    t = replace_dict(t, UPPER2LOWER)
+    return t
+
+
+def mask_whitespace(t: str):
+    # whitespace replace
+    # ex) f('\n hello') -> '{:newline:} hello'
+    return replace_dict(t, WHITESPACE)
+
+
+def unmask_whitespace(t: str):
+    # whitespace replace
+    # ex) f('{:newline:} hello') -> '\n hello'
+    return replace_dict(t, WHITESPACE, reverse=True)
+
+
 def get_difference(a: str, b: str, join=False):
     """
     Returns the difference of two sentences.
     join: set this to True if the whole combined string is needed. Default: False.
     """
-    while '  ' in a:
-        a = a.replace('  ', ' ')
-    while '  ' in b:
-        b = b.replace('  ', ' ')
+    a = normalize(a)
+    b = normalize(b)
+
+    a = mask_whitespace(a)
+    b = mask_whitespace(b)
+
     a, b = a.split(' '), b.split(' ')
     diff = difflib.ndiff(a, b)
     if join:
         result = ''.join(diff)
+        result = unmask_whitespace(result)
     else:
-        result = [i for i in diff if i != '?   -\n']
-        #result = list(diff)
+        result = [i for i in diff if i[0] != '?']
+        result = [unmask_whitespace(i) for i in result]
 
     return result
 
@@ -58,10 +108,20 @@ def jun(diff):
         if i < 0:
             break
         word = diff[i]
+        prev_word = diff[i - 1]
         if i == 0:
-            pass
+            if word[0] == '+':
+                if isinstance(result[-1], list):
+                    result[-1][1] = word[2:] + ' ' + result[-1][1]
+                else:
+                    result[-1] = [result[-1], word[2:] + ' ' + result[-1]]
+            elif word[0] == '-':
+                result.append([word[2:], ''])
+            else:
+                result.append(word[2:])
+            break
         if word[0] == '+':
-            prev_word = diff[i - 1]
+
             if prev_word[0] == '-':
                 result.append([prev_word[2:], word[2:]])
             else:

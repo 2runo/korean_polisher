@@ -5,8 +5,11 @@ from korean_polisher.dataset import awkfy_batch, get_batch
 
 
 class DataManager:
-    def __init__(self, max_len):
-        self.n_batch = len(os.listdir('./data/batch')) - 1000
+    def __init__(self, max_len, data_path="./data/batch"):
+        self.data_path = data_path
+        if self.data_path[-1] == '/':
+            self.data_path = self.data_path[:-1]
+        self.n_batch = len(os.listdir(self.data_path)) - 1000
         self.data = []
         # max_len is passed as argument
         self.max_len = max_len
@@ -31,7 +34,7 @@ class DataManager:
     def renew_batch(self):
         # 새로 랜덤한 파일 하나 읽어서 배치 마련
         iteration = np.random.randint(0, self.n_batch)
-        batch = get_batch(iteration + 1000, batch_directory='./data/batch').tolist()
+        batch = get_batch(iteration + 1000, batch_directory=self.data_path).tolist()
         batch = [i for i in batch if len(i[0]) < self.max_len]  # 너무 긴 텍스트는 제외
         self.data = self.awkfy(batch)  # [(x1, y1), (x2, y2), ...]
 

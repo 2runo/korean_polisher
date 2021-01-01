@@ -1,3 +1,6 @@
+"""
+데이터를 로드하고 전처리하는 generator
+"""
 import logging
 
 import numpy as np
@@ -8,43 +11,41 @@ from kogpt2.datamanger import DataManager
 
 
 class CharDataset(Dataset):
-    def __init__(self, tok_path, vocab, DATAMANAGER_MAX_LEN,
-                 max_len=32,
-                 U_TKN='<usr>', S_TKN='<sys>',
-                 BOS='<s>', EOS='</s>',
-                 MASK='<unused0>', SENT='<unused1>'):
+    def __init__(self, tok_path, vocab,
+                 max_len=32, data_path='./data/batch',
+                 u_tkn='<usr>', s_tkn='<sys>',
+                 bos='<s>', eos='</s>',
+                 mask='<unused0>', sent='<unused1>'):
         self._tok_path = tok_path
         self.tokenizer = None
         self.first = True
 
-        self.q_token = U_TKN
-        self.a_token = S_TKN
-        self.sent_token = SENT
-        self.bos = BOS
-        self.eos = EOS
-        self.maskt = MASK
+        self.q_token, self.a_token = u_tkn, s_tkn
+        self.sent_token = sent
+        self.bos, self.eos = bos, eos
+        self.maskt = mask
         self.vocab = vocab
         self.max_len = max_len
         self.padder = nlp.data.PadSequence(
-            max_len, pad_val=self.vocab[self.vocab.padding_token])
+            max_len, pad_val=self.vocab[self.vocab.padding_token]
+        )
 
         # pass max_len to DataManager
-        self.dm = DataManager(DATAMANAGER_MAX_LEN)
+        if data_path:
+            self.dm = DataManager(self.max_len, data_path=data_path)
+        else:
+            self.dm = None
 
     def _activate_sp(self):
         self.tokenizer = nlp.data.SentencepieceTokenizer(self._tok_path, 0, 0)
 
     def __len__(self):
-        #return len(self._data)
-        return 5000 * 50
+        return 5000 * 10
 
     def __getitem__(self, idx):
         if self.tokenizer is None:
             self._activate_sp()
-        #turn = self._data.iloc[idx]
-        #q = turn['Q']
-        #a = turn['A']
-        #sentiment = str(turn['label'])
+
         q, a = self.dm.get()
         sentiment = '0'
         q_toked = [

@@ -1,2 +1,6 @@
 .vscode/
 .idea/
+.venv/
+lightning_logs/
+*.pyc
+*.ckpt
