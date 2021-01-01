@@ -2,6 +2,8 @@
 ## 소개
 <바른문장>은 어색한 한국어 문장을 자연스럽게 바꿔 주는 프로그램입니다.
 
+**GPT2를 사용한 버전이 배포되었습니다.** [gpt 브랜치](https://github.com/2runo/korean_polisher/tree/gpt)에서 확인하실 수 있습니다.
+
 ## 시연 영상
 https://youtu.be/USg-cSiLXTA
 
