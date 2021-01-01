@@ -1,1 +1,1 @@
-이곳은 [KoGPT2](https://github.com/SKT-AI/KoGPT2)의 `kogpt` 디렉터리를 수정한 디렉터리입니다.
+이곳은 [KoGPT2](https://github.com/SKT-AI/KoGPT2)의 `kogpt2` 디렉터리를 수정한 디렉터리입니다.
