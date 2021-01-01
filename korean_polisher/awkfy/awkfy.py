@@ -6,8 +6,12 @@ import random
 import numpy as np
 from konlpy.tag import Okt
 
-from .string_utils import only_pos, polish_josa, shuffle_few_letters, shuffle_few_words
-from .awkfy_options import JOSA_LIST, POPULAR_NOUNS, PRONOUNS, REPLACES
+from .string_utils import (
+    only_pos, polish_josa, shuffle_few_letters, shuffle_few_words
+)
+from .awkfy_options import (
+    JOSA_LIST, POPULAR_NOUNS, PRONOUNS, REPLACES
+)
 
 
 okt = Okt()
@@ -105,11 +109,22 @@ def shuffle_word(text):
     # 띄어쓰기 교정
 
     # 단어 위치 바꾸기
-    words = shuffle_few_words(text.split(' '))
-    if len(text.split(' ')) > 15:
-        words = shuffle_few_words(words)
+    words = text.split(' ')
+    if len(words) == 1:
+        return text
+    if len(words) == 2:
+        return words[1] + ' ' + words[0]
+
+    # 섞을 단어 개수 정하기
+    p = (lambda a: a/a.sum())(np.arange(2, len(words))[::-1]**5)  # 적은 개수의 단어를 섞을 가능성이 높도록
+    n = np.random.choice(np.arange(2, len(words)), 1, p=p)[0]
+    words = shuffle_few_words(words, n)
+    if len(text.split(' ')) > 20:
+        n = np.random.choice(np.arange(2, len(words)), 1, p=p)[0]
+        words = shuffle_few_words(words, n)
     if len(text.split(' ')) > 30:
-        words = shuffle_few_words(words)
+        n = np.random.choice(np.arange(2, len(words)), 1, p=p)[0]
+        words = shuffle_few_words(words, n)
     return ' '.join(words)
 
 
@@ -146,3 +161,20 @@ def replace_word(text):
         text = text[:idx] + val + text[idx+len(key):]
         return text  # 한 번만 replace하고 반환
     return text
+
+
+### 조사 제거 ###
+def remove_josa(text):
+    # ex) 나는 축구가 좋아 -> 나는 축구 좋아
+    pos = okt.pos(text)
+    try:
+        pos, idx = only_pos(text, pos, 'Josa')  # 하나의 조사만 무작위 선택
+    except IndexError:
+        # 조사가 없다면 -> 그냥 반환
+        return text
+
+    pos = [i[0] for i in pos]
+    del pos[idx]  # 조사 삭제
+
+    return ''.join(pos)
+

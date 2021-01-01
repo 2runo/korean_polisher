@@ -5,9 +5,14 @@ import os
 import time
 
 import numpy as np
-import tensorflow as tf
 
-from ..awkfy import attach_josa, replace_josa, reverse_plural, shuffle_word, insert_word, insert_pronoun, replace_word
+from ..awkfy.awkfy import (
+    attach_josa, replace_josa,
+    reverse_plural, 
+    shuffle_word,
+    insert_word, insert_pronoun,
+    replace_word, remove_josa
+)
 
 """
 Note: run dataset_batch_init -> iter and run get_batch & awkfy_batch & tokenize_batch
@@ -90,9 +95,16 @@ def awkfy_batch(batch: np.ndarray):
         reverse_plural,
         shuffle_word,
         shuffle_word,
+        shuffle_word,
+        #shuffle_word,
+        # shuffle_word,
+        # shuffle_word,
         insert_word,
         insert_pronoun,
-        replace_word
+        replace_word,
+        remove_josa,
+        remove_josa,
+        remove_josa,
     ]
 
     output = []

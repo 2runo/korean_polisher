@@ -76,7 +76,7 @@ def shuffle_few_letters(word, n=2):
 
 
 def shuffle_few_words(words, n=2):
-    # words 특정 개수의 단어만 섞는다
+    # words 특정 개수의 단어만 섞는다 (섞을 단어 개수 : n)
     # ex) f(['안녕', '나는', '축구', '좋아해'], n=2) -> ['안녕', '축구', '나는', '좋아해'] 등등..
     def shuffle(x):
         return random.sample(x, len(x))
@@ -84,19 +84,19 @@ def shuffle_few_words(words, n=2):
         return shuffle(words)
     i = random.randint(0, len(words) - n)
     shuffled = shuffle(words[i:i+n])
-    n = 0
+    cnt = 0
     while shuffled == words[i:i+n]:
         shuffled = shuffle(words[i:i + n])
-        if n > 100:
+        if cnt > 100:
             break
-        n += 1
+        cnt += 1
     return words[:i] + shuffled + words[i+n:]
 
 
-def shuffle_few_words(words):
-    i = random.randint(0, len(words) - 2)
-    r = words[:i] + [words[i+1]] + [words[i]] + words[i+2:]
-    return r
+#def shuffle_few_words(words):
+#    i = random.randint(0, len(words) - 2)
+#    r = words[:i] + [words[i+1]] + [words[i]] + words[i+2:]
+#    return r
 
 
 def match_by_length(text, lst):

@@ -3,7 +3,7 @@ test loss, acc 시각화
 """
 import matplotlib.pyplot as plt
 
-with open('history.txt', 'r') as f:
+with open('../../history.txt', 'r') as f:
     d = f.read()
 
 d = d.split('\n')

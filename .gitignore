@@ -1,9 +1,0 @@
-**/.idea/
-**/.vscode/
-**/__pycache__/
-
-*.zip
-**/checkpoints/
-data/
-
-README.txt
