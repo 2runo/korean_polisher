@@ -1,0 +1,1 @@
+[체크포인트](https://drive.google.com/drive/folders/1Z8vvTnqH9zTjl6xQm6FT0-xTVCMRuzrN?usp=sharing)를 다운받은 후 압축을 풀어 이곳에 체크포인트 파일(`model-last.ckpt`)을 넣어 주세요.
