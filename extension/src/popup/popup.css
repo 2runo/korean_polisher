@@ -1,0 +1,240 @@
+body {
+    display: flex;
+    flex-direction: column;
+    vertical-align: center;
+    align-items: center;
+    
+    width: 322px;
+    min-height: 200px;
+    margin: 0;
+    
+    background-color: rgb(251, 253, 255);
+}
+div {
+    display: inline;
+}
+
+/*내용*/
+article, section {
+    display: flex;
+    flex-direction: column;
+    vertical-align: center;
+    align-items: center;
+    width: 100%;
+}
+setting {
+    width: 100%;
+}
+#resultCont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    margin-top: 61px;
+    margin-bottom: 46px;
+    height: 140px;
+    width: 140px;
+    border-radius: 10rem;
+    background-color: rgb(252, 242, 242);
+    
+}
+
+#explainCont {
+    display: block;
+    font-family: noto-medium;
+    font-size: 2rem;
+    color: rgb(236, 60, 60);
+    margin-top: 20px;
+}
+
+#onoffCont {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    
+    font-family: noto-light;
+    font-size: 1rem;
+    
+    margin-bottom: 25px;
+    bottom: 0;
+    color: rgb(127, 127, 127);
+}
+#onoffCont > span {
+    margin: 10px;
+}
+
+#explainOff {
+    display: none;
+}
+#explainIng {
+    display: none;
+}
+
+/*꺼졌을 때*/
+.ffo #explainOff {
+    display: block;
+}
+.ffo #explainOff {
+    display: block;
+}
+
+
+/*켜졌을 때*/
+.no #resultCont {
+    animation: onResultCont 0.4s ease forwards;
+}
+.no #resultN {
+    animation: onResultN 0.2s ease forwards !important;
+}
+.no #resultUnknown {
+    animation: onResultN 0.2s ease forwards;
+}
+/*Korean Polisher가 꺼져 있을 때*/
+.no #explainOff {
+    display: none;
+}
+.no #explainIng {
+    display: block;
+}
+.ffo #explainOff {
+    display: block;
+}
+.ffo #explainIng {
+    display: none;
+}
+
+.onoffToggle {
+    display: flex;
+    align-items: center;
+    
+    font-family: noto-medium;
+    font-size: 1.1rem;
+    
+    border-radius: 10rem;
+    width: 100px;
+    height: 44px !important;
+    background-color: rgb(143, 245, 182);
+    color: white;
+    
+    cursor: pointer;
+}
+.onoffToggle > span {
+    display: inline-block;
+    position: absolute;
+    
+    left: 50px;
+    margin-left: 15px;
+}
+.toggleLing {
+    display: inline-block;
+    position: absolute;
+    
+    right: 57px;
+    border-radius: 10rem;
+    width: 32px;
+    height: 32px;
+    background-color: white;
+}
+.on {
+    animation: off2on 0.3s ease forwards;
+}
+.on > .toggleLing {
+    animation: off2on2 0.3s ease forwards;
+}
+.on > .toggleLingSmall {
+    animation: off2on2small 0.3s ease forwards;
+}
+.on > .radioLingSmall {
+    animation: off2on2radio 0.2s ease forwards;
+}
+.on > span {
+    animation: off2on3 0.3s ease forwards;
+}
+.off {
+    animation: on2off 0.3s ease forwards;
+}
+.off > .toggleLing {
+    animation: on2off2 0.3s ease forwards;
+}
+.off > .toggleLingSmall {
+    animation: on2off2small 0.3s ease forwards;
+}
+.off > .radioLingSmall {
+    animation: on2off2radio 0.2s ease forwards;
+}
+.off > span {
+    animation: on2off3 0.3s ease forwards;
+}
+
+@font-face {
+    font-family: noto-bold;
+    src: url("/src/fonts/NotoSansKR-Bold.woff2");
+}
+@font-face {
+    font-family: noto-light;
+    src: url("/src/fonts/NotoSansKR-Light.woff2");
+}
+@font-face {
+    font-family: noto-medium;
+    src: url("/src/fonts/NotoSansKR-Medium.woff2");
+}
+@font-face {
+    font-family: noto-regular;
+    src: url("/src/fonts/NotoSansKR-Regular.woff2");
+}
+
+
+@keyframes off2on {
+    from {
+        background-color: rgb(166, 166, 166);
+        border-color: rgb(166, 166, 166);
+    }
+    to {
+        background-color: rgb(143, 245, 182);
+        border-color: rgb(143, 245, 182);
+    }
+}
+@keyframes off2on2 {
+    from {
+        right: 108px;
+    }
+    to {
+        right: 54px;
+    }
+}
+@keyframes off2on3 {
+    from {
+        left: 80px;
+    }
+    to {
+        left: 50px;
+    }
+}
+
+@keyframes on2off {
+    from {
+        background-color: rgb(143, 245, 182);
+        border-color: rgb(143, 245, 182);
+    }
+    to {
+        background-color: rgb(166, 166, 166);
+        border-color: rgb(166, 166, 166);
+    }
+}
+@keyframes on2off2 {
+    from {
+        right: 20px;
+    }
+    to {
+        right: 70px;
+    }
+}
+@keyframes on2off3 {
+    from {
+        left: 10px;
+    }
+    to {
+        left: 45px;
+    }
+}
